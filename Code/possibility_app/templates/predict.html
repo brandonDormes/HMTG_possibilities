@@ -1,0 +1,192 @@
+
+{% extends "invest.html" %}
+{% block head %} {{ super() }}
+{% endblock %}
+{% block js %}
+<script>
+    var trial_pred = 0
+    function updateP1(pred){
+        $('#p1_cash img').remove();
+        $('#p1_total h2').text('Stranger: $' + ({{ 10 - inv_amt }} + pred));
+        for (let i = 0; i < ({{ 10 - inv_amt }} + pred); i++ ){
+            if (i < 20){
+                $('#p1_cash1').append('<img src="../static/images/cash.png" style="width: 2em; height: auto;">')
+            } else if (20< i< 40){
+                $('#p1_cash2').append('<img src="../static/images/cash.png" style="width: 2em; height: auto;">')
+            } else if (i > 40){
+                $('#p1_cash3').append('<img src="../static/images/cash.png" style="width: 2em; height: auto;">')}
+            }
+    }
+
+    function updateP2(pred){
+        $('#p2_cash img').remove();
+        $('#p2_total h2').text('Wilson: $' + ({{ inv_amt * mult }} - pred));
+        for (let i = 0; i < ({{ inv_amt * mult }} - pred); i++ ){
+            if (i < 20){
+                $('#p2_cash1').append('<img src="../static/images/cash.png" style="width: 2em; height: auto;">')
+            } else if (20< i< 40){
+                $('#p2_cash2').append('<img src="../static/images/cash.png" style="width: 2em; height: auto;">')
+            } else if (i > 40){
+                $('#p2_cash3').append('<img src="../static/images/cash.png" style="width: 2em; height: auto;">')}
+            }
+    }
+
+    const queryString = window.location.search;
+    const urlParams = new URLSearchParams(queryString);
+
+
+</script>
+{% endblock %}
+
+
+{%  block p1_pic %}
+    <div class="row">
+        <div class="col align-self-end" id="p1_cash">
+        <div class="row">
+            <div class="col" id="p1_cash3" style="list-style: none; align-self: flex-end;"></div>
+            <div class="col" id="p1_cash2" style="list-style: none; align-self: flex-end;"></div>
+            <div class="col" id="p1_cash1" style="list-style: none; align-self: flex-end;"></div>
+        </div>
+    <script>
+
+        for (let i = 0; i < {{ 10 - inv_amt }}; i++ ){
+            if (i < 20){
+                $('#p1_cash1').append('<img src="../static/images/cash.png" style="width: 2em; height: auto;">')
+            } else if (20< i< 40){
+                $('#p1_cash2').append('<img src="../static/images/cash.png" style="width: 2em; height: auto;">')
+            } else if (i > 40){
+                $('#p1_cash3').append('<img src="../static/images/cash.png" style="width: 2em; height: auto;">')}
+            }
+    </script>
+    </div>
+        <div class="col align-self-end">
+            <h1 class="p1_expect" >${{ inv_amt * 4 }}</h1>
+            <img src="../static/images/p1_thought.png" id="p1_bubble">
+            <img src="../static/images/p1_images/{{ p1 }}.png" style="max-width: 100%;">
+        </div>
+    </div>
+    <div class="row">
+        <div class="col" id="p1_total">
+            <h2 style="font-size: xxx-large;">Stranger : ${{ 10 - inv_amt }}</h2>
+        </div>
+    </div>
+    <script>
+        $('#p1_pic').removeClass("animated bounceInDown");
+    </script>
+{% endblock %}
+
+{% block center_top %}
+    <div class="col" id="trial_info">
+        <p>A new stranger invested <span style="font-size: xxx-large;">${{ inv_amt }}</span></p>
+        <p> It was multiplied by <span style="font-size: xxx-large;">{{ mult }}!</span></p>
+
+    </div>
+{% endblock %}
+
+<!-- slider -->
+{% block center_mid %}
+    <div class="row justify-content-center" id="prompt">
+        <p style="font-size: xx-large;">How much will he return?</p>
+    </div>
+    <div class="row align-items-center">
+        <div class="col" style="max-width: 2%; font-size: xx-large;">
+            0
+        </div>
+        <div class="col">
+            <input type="range" max="{{ inv_amt * mult }}" value=0 id="pred_slider">
+        </div>
+        <div class="col" style="max-width: 2%;font-size: xx-large;">
+            ${{ inv_amt * mult }}
+        </div>
+    </div>
+    <div class="row justify-content-center" id="predamt" style="font-size: xxx-large;">
+
+    </div>
+    <script>
+        var $rangeslider = $('#pred_slider');
+        var $amount = $('#predamt');
+        $rangeslider
+            .rangeslider({
+                polyfill: false,
+                onInit: function () {
+                    localStorage.setItem('full_fill', (document.getElementById('js-rangeslider-0').clientWidth)-20);
+                },
+                onSlideEnd: function () {
+                    trial_pred = parseInt(this.value);
+                    updateP1(trial_pred)
+                    updateP2(trial_pred)
+                    if (window.location.pathname === '/predict'){localStorage.setItem('guess_fill', document.getElementById('greenslider').clientWidth);}
+                }
+            })
+            .on('input', function () {
+                trial_pred = parseInt(this.value);
+                $amount.text('$' + this.value);
+                updateP1(trial_pred);
+                updateP2(trial_pred);
+                $('#predict_btn').removeClass('disabled');
+                if (window.location.pathname === '/predict'){localStorage.setItem('guess_fill', document.getElementById('greenslider').clientWidth);}
+            });
+        $('.rangeslider__fill').attr("id", "greenslider")
+
+</script>
+{% endblock %}
+
+
+
+{% block center_bttm %}
+    <div class="col" id="predict_bttn">
+        <a href="/decision" type="button" id="predict_btn" class="btn btn-primary disabled">Continue</a>
+    </div>
+    <script>
+    $('a#predict_btn').click( function(e) {
+        console.log('button was pressed: ' + trial_pred)
+        localStorage.setItem('prediction', trial_pred)
+        $.ajax({
+            type: "POST",
+            url: "predict",
+            data: JSON.stringify({"trial_prediction": trial_pred}),
+            traditional: true,
+            contentType: "application/json; charset=utf-8",
+            dataType: 'json',
+        });
+    });
+    </script>
+{% endblock %}
+
+{%  block right_top %}
+{% endblock %}
+
+{% block right_bttm %}
+    <div class="row">
+        <div class="col align-self-end" >
+            <h1 class="p2_p1_expect" >${{ inv_amt * 4 }}</h1>
+            <img src="../static/images/p1_images/{{ p1 }}.png" class="p2_p1_pic">
+            <img src="../static/images/p2_thought.png" id="p2_bubble">
+            <img src="../static/images/thinkWilson.png" style="max-width: 91%;" id="p2pic">
+        </div>
+        <div class="col align-self-end" id="p2_cash" style="align-self: flex-end;">
+            <div class="row">
+                <div class="col" id="p2_cash1" style="list-style: none; align-self: flex-end;"></div>
+                <div class="col" id="p2_cash2" style="list-style: none; align-self: flex-end;"></div>
+                <div class="col" id="p2_cash3" style="list-style: none; align-self: flex-end;"></div>
+            </div>
+            <script>
+            for (let i = 0; i < ({{ inv_amt * mult }} ); i++ ){
+                if (i < 20){
+                    $('#p2_cash1').append('<img src="../static/images/cash.png" style="width: 2em; height: auto;">')
+                } else if (20< i< 40){
+                    $('#p2_cash2').append('<img src="../static/images/cash.png" style="width: 2em; height: auto;">')
+                } else if (i > 40){
+                    $('#p2_cash3').append('<img src="../static/images/cash.png" style="width: 2em; height: auto;">')}
+                }
+        </script>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col" id="p2_total">
+            <h2 style="font-size: xxx-large;"> Wilson: ${{ inv_amt * mult }}</h2>
+        </div>
+    </div>
+
+{% endblock %}
+

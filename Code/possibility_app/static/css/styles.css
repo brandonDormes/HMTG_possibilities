@@ -1,0 +1,128 @@
+@font-face {
+      font-family: Bandar;
+      src: url("../font/Bandar-RpdqW.otf");
+    }
+#stage{
+    height: 100vh;
+    text-align: center;
+    background: #bde8f3;
+    font-family: Bandar;
+}
+#wall1{
+    border: black;
+    background: #39405b;
+    /*background-image: url("../images/bricks.jpeg");*/
+
+}
+.row.wall1{
+    height: 33%;
+}
+
+
+#trial_count{
+    font-size: x-large;
+        height: 33%;
+}
+#p1_thought{
+    height: 33%;
+}
+#p1_bubble{
+    max-width: inherit;
+    position: relative;
+    height: 25vh;
+    top: 1vh;
+}
+.p1_expect{
+    position: relative;
+    top:15.5vh;
+    z-index: 1;
+    font-size: 3vh;
+}
+#p1_thought_amt{
+    position: relative;
+    top: -13vh;
+    left: -1vw;
+    font-size: 3.5vh;
+}
+#p2_bubble{
+    max-width: inherit;
+    position: relative;
+    height: 23vh;
+    top: 1vh;
+}
+.p2_p1_expect{
+    position: relative;
+    top:16.65vh;
+    z-index: 1;
+    font-size: 1.5rem;
+}
+.p2_p1_pic{
+    position: relative;
+    top:19vh;
+    z-index: 1;
+    width: 30%;
+    filter: brightness(0.25);
+
+}
+
+
+
+#p1_pic{
+    height: 33% ;
+    align-content: flex-end;
+}
+
+#center_top{
+    height: 33%;
+    font-size: xx-large;
+    align-items: center;
+}
+
+#center_mid{
+    height: 33%;
+}
+#center_bttm{
+    height: 33%;
+}
+
+#right_top{
+    height: 33%;}
+#right_mid{height: 33%;
+}
+#right_bttm {
+    height: 33%;
+    align-content: end;
+
+}
+
+@-webkit-keyframes  invest_cash {
+    0% {transform:scale(.25);
+        margin-top: 25vh;
+        margin-left: -33em;
+    }
+    25%{transform: scale(.45);
+        margin-top: 5em;
+        margin-left: -31em;
+    }
+    50%{transform: scale(1.8);
+        margin-top: .01em;
+        margin-left: .01em;
+    }
+    99%{opacity: 1;}
+    100%{transform:scale(.35);
+         margin-top: 25vh;
+         margin-left: .01em;
+        opacity: 0;
+    }
+
+}
+
+.invest_cash{
+    animation-name: investment; /* Safari 4.0 - 8.0 */
+    animation: invest_cash;
+    animation-delay: 5s;
+    animation-fill-mode: backwards;
+    animation-timing-function: linear;
+
+}
+

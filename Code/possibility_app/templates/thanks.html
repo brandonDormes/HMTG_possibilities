@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html>
+{% extends  "base.html" %}
+{% block head %} {{ super() }}{% endblock %}
+<body>
+{{ super() }}
+{% block wall1 %}{% endblock %}
+{% block wall2 %}{% endblock %}
+{% block center_mid %}
+<h1> You've finished the Prediction Game!</h1>
+<h3>Thanks for playing! Your bonus is: ${{ bonus }}</h3>
+    <a href="https://app.prolific.co/submissions/complete?cc=XXX">Complete Prolific Task</a>
+
+{% endblock %}
+</body>
+</html>

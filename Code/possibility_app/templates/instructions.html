@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html>
+{% extends  "base.html" %}
+{% block head %} {{ super() }}{% endblock %}
+<body>
+{% block p1_col %}
+    <script>$('#left_col').removeClass('col-sm-3')</script>
+{% endblock %}
+{% block p2_col %}
+    <script>$('#right_col').removeClass('col-sm-3')</script>
+{% endblock %}
+{% block wall1 %}{% endblock %}
+{% block wall2 %}{% endblock %}
+{% block center_top %}
+    <script>$('#center_top ').css('height', '15%')</script>
+    <div class="row">
+        <div class="row">
+            <p style="font-size: x-large;">Welcome to the Prediction Game!</p>
+        </div>
+        <div class="row">
+            <p class="animated bounceInUp" style="font-size: x-large; align-self: flex-start;">Instructions!</p>
+        </div>
+    </div>
+
+{% endblock %}
+{% block center_mid %}
+    <script>$('#center_col').removeClass('col-sm-4')</script>
+    <div id="carouselExampleIndicators" class="carousel carousel-dark slide" data-bs-ride="false" data-bs-interval="false">
+        <div class="carousel-indicators">
+            <button type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide-to="0" class="active" aria-current="true" aria-label="Slide 1"></button>
+            <button type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide-to="1" aria-label="Slide 2"></button>
+            <button type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide-to="2" aria-label="Slide 3"></button>
+            <button type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide-to="3" aria-label="Slide 4"></button>
+            <button type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide-to="4" aria-label="Slide 5"></button>
+            <button type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide-to="5" aria-label="Slide 6"></button>
+            <button type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide-to="6" aria-label="Slide 7"></button>
+            <button type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide-to="7" aria-label="Slide 8"></button>
+            <button type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide-to="8" aria-label="Slide 9"></button>
+            <button type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide-to="9" aria-label="Slide 10"></button>
+            <button type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide-to="10" aria-label="Slide 11"></button>
+        </div>
+
+        <div class="carousel-inner">
+            <div class="carousel-item active">
+                <div class="row justify-content-center" style="height: 75vh;">
+                    <p style="font-size: xx-large;">In this game, you will be observing one player, Wilson, as he interacts with multiple anonymous strangers...</p>
+                    <br><br>
+                    <img src="../static/images/wilson.png" class="d-block w-100" alt="..." style="max-width: fit-content;">
+                </div>
+            </div>
+            <div class="carousel-item">
+                <div class="row justify-content-center" style="height: 75vh;">
+                    <p style="font-size: xx-large;">Wilson has a <span style="color: #d02eab;">~*Magic Multiplying Box*~</span> that quadruples anything placed inside ...</p>
+                    <br><br>
+                    <div class="row justify-content-center" style="height: 75vh;">
+                        <div class="col-sm-4">
+                            <img src="../static/images/instruct_box.png" class="d-block w-100" alt="..." style="max-width: fit-content;">
+                        </div>
+                        <div class="col-sm-4">
+                            <img src="../static/images/instruct_box2.png" class="d-block w-100" alt="..." style="max-width: fit-content;">
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="carousel-item">
+                <div class="row justify-content-center" style="height: 75vh;">
+                    <p style="font-size: xx-large;">In each interaction, a stranger, who cannot see Wilson through a wall, decides to put some amount of $10 into the <span style="color: #d02eab;">~*Magic Multiplying Box*~</span>...</p>
+                    <br><br>
+                    <img src="../static/images/instruct_2.png" class="d-block w-100" alt="..." style="max-width: 42%; border: double black;">
+                </div>
+            </div>
+            <div class="carousel-item">
+                <div class="row justify-content-center" style="height: 75vh;">
+                    <p style="font-size: xx-large;">They do so, believing the <span style="color: #d02eab;">~*Magic Multiplying Box*~</span> will multiply their investment by <span style="font-weight:800;">4</span> before it goes to Wilson ...</p>
+                    <br><br>
+                    <img src="../static/images/instruct_3.png" class="d-block w-100" alt="..." style="max-width: 20%;">
+                </div>
+            </div>
+            <div class="carousel-item">
+                <div class="row justify-content-center" style="height: 75vh;">
+                    <p style="font-size: xx-large;">They expect Wilson to share the multiplied amount ...</p>
+                    <br><br>
+                    <div class="col-sm-8">
+                        <div class="row justify-content-center">
+                            <div class="col">
+                                <img src="../static/images/instruct_2a.png" class="d-block w-100" alt="..." style="max-width: fit-content;">
+                            </div>
+                            <div class="col">
+                                <p style="font-size: xxx-large;">&#8594;</p>
+                            </div>
+                            <div class="col">
+                                <img src="../static/images/instruct_2b.png" class="d-block w-100" alt="..." style="max-width: fit-content;">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="carousel-item">
+                <div class="row justify-content-center" style="height: 75vh;">
+                    <h3>In reality, however, the <span style="color: #d02eab;">~*Magic Multiplying Box*~</span> can multiply the amount by <span style="font-size: xxx-large">2, 4, or 6</span> ...</h3>
+                    <br>
+                    <img src="../static/images/instruct_mult.png" class="d-block w-100" alt="..." style="max-width: 42%;border: double black;">
+                </div>
+            </div>
+            <div class="carousel-item">
+                <div class="row justify-content-center" style="height: 75vh;">
+                    <h3>Wilson is always aware of the stranger's expectation that the box multiplies by 4 ...</h3>
+                    <br>
+                    <img src="../static/images/instruct_4.png" class="d-block w-100" alt="..." style="max-width: 42%;border: double black;">
+                </div>
+            </div>
+            <div class="carousel-item">
+                <div class="row justify-content-center" style="height: 75vh;">
+                    <h3>Your job, is to try and predict how much of the <span style="font-style: italic;">true</span> multiplied amount Wilson will return to the stranger...</h3>
+                    <br>
+                    <img src="../static/images/instruct_5.png" class="d-block w-100" alt="..." style="max-width: 42%;border: double black;">
+                </div>
+            </div>
+            <div class="carousel-item">
+                <div class="row justify-content-center" style="height: 75vh;">
+                    <h3>Afterward, you will be shown Wilson's decision, then watch him interact with someone new...</h3>
+                    <br>
+                    <img src="../static/images/instruct_6.png" class="d-block w-100" alt="..." style="max-width: 42%;border: double black;">
+                </div>
+            </div>
+            <div class="carousel-item">
+                <div class="row justify-content-center" style="height: 75vh;">
+                    <h3>Sometimes, you will be asked to write down the reason for Wilson's decision...</h3>
+                    <br>
+                    <img src="../static/images/instruct_7.png" class="d-block w-100" alt="..." style="max-width: 42%;border: double black;">
+                </div>
+            </div>
+            <div class="carousel-item">
+                <div class="row justify-content-center" style="height: 75vh;">
+                    <h2 class="animated wobble">Bonus!!</h2>
+                    <br>
+                    <hr />
+                        <div class="instructions well" style="background-color: #bfd5f4; width: 80%;">
+                            <h2>Remember to try learn about how Wilson is making decisions in order to more accurately predict his behavior.</h2>
+                            <br>
+                            <h2>At the end of the game, your accuracy on a randomly chosen trial will be used to compute a bonus!</h2>
+                            <br>
+                            <h2>The closer your guess is to Wilson’s actual decision, the larger your bonus will be.</h2>
+                            <br>
+                            <h2>Predict correctly, and you’ll receive an extra $2!</h2>
+                        </div>
+                    <hr />
+                </div>
+            </div>
+            <div class="carousel-item">
+                <div class="row justify-content-center" style="height: 75vh;">
+                    <div class="col-sm-8">
+                        <h1>To Recap:</h1>
+                        <span style="text-align: left;">
+                            <p style="font-size: 2rem;"><b>First</b>: Others will give money for the magic box to quadruple.</p>
+                            <p style="font-size: 2rem;"><b>Next</b>: The box will yield less, more, or exactly what was expected, <span style="color: #ef6ae4; font-size: 30px;" ><i>but only Wilson will know this!</i> </span></>
+                            <p style="font-size: 2rem;"><b>Then</b>: You’ll predict what Wilson will return.</p>
+                            <p style="font-size: 2rem;"><b>Finally</b>: You’ll find out how accurate your prediction was</p>
+                        </span>
+                        <br>
+                        <h3>Ready to play?</h3>
+                        <div class="col" id="begin">
+                            <a href="/invest" type="button" id="start_bttn" class="btn btn-primary">Begin</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide="prev">
+            <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+            <span class="visually-hidden">Previous</span>
+        </button>
+        <button class="carousel-control-next" type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide="next">
+            <span class="carousel-control-next-icon" aria-hidden="true"></span>
+            <span class="visually-hidden">Next</span>
+        </button>
+    </div>
+{% endblock %}
+
+</body>
+</html>

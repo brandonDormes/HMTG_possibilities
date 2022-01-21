@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+
+{% extends "decision.html" %}
+
+{% block head %} {{ super() }}{% endblock %}
+{% block js %}{{ super() }}{% endblock %}
+
+
+{% block center_mid %}
+    {{ super() }}
+     <div class="row justify-content-center" id="prompt">
+    </div>
+    <div class="row align-items-center">
+        <div class="col" style="max-width: 2%; font-size: xx-large;">
+        </div>
+        <div class="col">
+        </div>
+        <div class="col" style="max-width: 2%;font-size: xx-large;">
+        </div>
+    </div>
+    <div class="row justify-content-center" id="predamt" style="font-size: xxx-large;">
+
+    </div>
+    <script>
+        sub_pred = Number(localStorage.getItem('prediction'))
+        full_fill = Number(localStorage.getItem('full_fill'))
+        guess_fill = Number(localStorage.getItem('guess_fill'))
+        //$("#prompt p").text(' You were off by '+ Math.abs({{ ret }} - sub_pred));
+        $("#pred_slider").val({{ ret }}).change();
+        $("#predamt").text('He returned ${{ ret }}').css('font-size', 'xxx-large')
+
+        if (sub_pred === 0) {
+            $(".rangeslider__fill").css('background', 'red');
+            console.log('the pred was zero')
+        } else if (sub_pred == {{ inv_amt*mult }}){
+            $("#js-rangeslider-0").prepend('<div class="rangeslider__fill" id="predError" style="background:red; left: 0; height:100%; width: ' + (guess_fill+20).toString() + 'px; " ></div>');
+        }else if (sub_pred < {{ ret }}) {
+            console.log('the pred was Less')
+            x = (guess_fill/full_fill) * 100;
+            y = ({{ ret/(inv_amt*mult)}}) * 100;
+            A = Math.abs(y - x) ;
+            $(".rangeslider__handle").before('<div class="rangeslider__fill" id="predError" style="background:red; left:'+guess_fill.toString()+'px; height:100%; width:' + A.toString() + '%; " ></div>');
+        } else if (sub_pred > {{ ret }}) {
+            console.log('the pred was too high')
+            $("#js-rangeslider-0").prepend('<div class="rangeslider__fill" id="predError" style="background:red; left: 0; height:100%; width: ' + guess_fill.toString() + 'px; " ></div>');
+        } else{};
+    </script>
+
+{% endblock %}
+
+{% block center_bttm %}
+    <div class="col animated zoomInDown">
+        <div class="row">
+            <p style="font-size: 2.5em; color: #d02eab"> Why do you think Wilson made this decision?</p>
+        </div>
+        <div class="row justify-content-center" style="height: 18%;" id="guess_text">
+            <form method="post" action="invest">
+                <label></label>
+                <textarea type="text" id="trial_text" autocomplete="off" onkeyup="if (this.textLength !== 0){submit.disabled = false} else {submit.disabled = true}" style="border-radius: .5em; font-size: x-large; width: inherit;"></textarea>
+                <br>
+                <div class="col" id="submit_reason">
+                    <p class="submit">
+                        <input type="submit" value="Continue" class="button" id="submit" name="submit" onclick="submitReason()" disabled></p>
+                </div>
+            </form>
+        </div>
+    </div>
+    <script>
+
+        function submitReason(){
+            console.log('Reasons were submitted.')
+            $.ajax({
+                type: "POST",
+                url: "guesswhy",
+                data: JSON.stringify({"subject_response": document.getElementById("trial_text").value}),
+                traditional: true,
+                contentType: "application/json; charset=utf-8",
+                dataType: 'json',
+                success: function(){window.location.href = "invest";}
+            });
+        }
+    </script>
+{% endblock %}
+</html>

@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html>
+{% extends  "base.html" %}
+{% block head %} {{ super() }}{% endblock %}
+<body>
+{% block js %}
+    <script>
+        document.body.addEventListener("keydown", function (event) {
+            if (event.key === "Enter") {window.location.href = "predict";}
+        });
+    </script>
+{% endblock %}
+
+{% block trial_count %}
+    <h1>trial: {{ trial_num }} / 30</h1>
+{% endblock %}
+
+{% block p1_thought %}
+{% endblock %}
+
+{% block p1_pic %}
+    <div class="row">
+        <div class="col align-self-end" id="p1_cash">
+        <div class="row">
+            <div class="col" id="p1_cash3" style="list-style: none; align-self: flex-end;"></div>
+            <div class="col" id="p1_cash2" style="list-style: none; align-self: flex-end;"></div>
+            <div class="col" id="p1_cash1" style="list-style: none; align-self: flex-end;"></div>
+        </div>
+
+    <script>
+        var p1_amt = {{ 10 - inv_amt }}
+        for (let i = 0; i < p1_amt; i++ ){
+            if (i < 20){
+                $('#p1_cash1').append('<img src="../static/images/cash.png" style="width: 2em; height: auto;">')
+            } else if (20< i< 40){
+                $('#p1_cash2').append('<img src="../static/images/cash.png" style="width: 2em; height: auto;">')
+            } else if (i > 40){
+                $('#p1_cash3').append('<img src="../static/images/cash.png" style="width: 2em; height: auto;">')}
+            }
+    </script>
+    </div>
+        <div class="col align-self-end">
+            <h1 class="p1_expect" >${{ inv_amt * 4 }}</h1>
+            <img src="../static/images/p1_thought.png" id="p1_bubble">
+            <img src="../static/images/p1_images/{{ p1 }}.png" style="max-width: 100%;">
+        </div>
+    </div>
+    <div class="row">
+        <div class="col">
+            <h2 style="font-size: xxx-large;">Stranger : ${{ 10 - inv_amt }}</h2>
+        </div>
+    </div>
+{% endblock %}
+
+
+
+
+{% block center_top %}
+    <div class="col animated bounceInDown" id="trial_info">
+        <p class="animated bounceInDown">A new stranger invested <span style="font-size: xxx-large;">${{ inv_amt }}</span></p>
+
+    </div>
+    <script>
+        setTimeout(function(){$('#trial_info').append('<p class="animated bounceInUp"> It was multiplied by <span style="font-size: xxx-large;">{{ mult }}!</span></p>')}, 3000)
+    </script>
+{% endblock %}
+
+
+{% block center_mid %}
+    <script>
+        setTimeout(function(){
+            $('#center_mid').append('<div class="col col-sm-4 align-self-center" id="p2_pic"><img src="../static/images/inv_cash.png" style="animation: invest_cash 1s linear 0s 1 normal both;" /> </div>');
+        }, 1200)
+    </script>
+
+{% endblock %}
+
+{% block center_bttm %}
+    <video id="magicbox" src="../static/images/magicbox.mp4" muted playsinline type="video/mp4" preload="true" style="max-width: 60%;"></video>
+    <p style="font-size: x-large;opacity: 0;">Press Enter to Continue</p>
+
+    <script>
+        setTimeout(function(){ document.getElementById('magicbox').playbackRate=4;
+            document.getElementById('magicbox').play()}, 2200)
+        setTimeout(function(){$('#center_bttm p').css('opacity', 1)}, 3000)
+    </script>
+{% endblock %}
+
+{%  block right_top %}
+{% endblock %}
+
+{% block right_bttm %}
+    <div class="row">
+        <div class="col" style="align-self: flex-end;" >
+            <img src="../static/images/wilson.png" style="max-width: 100%;">
+        </div>
+        <div class="col" id="p2_cash" style="align-self: flex-end; opacity:0;">
+            <div class="row">
+                <div class="col" id="p2_cash1" style="list-style: none; align-self: flex-end;"></div>
+                <div class="col" id="p2_cash2" style="list-style: none; align-self: flex-end;"></div>
+                <div class="col" id="p2_cash3" style="list-style: none; align-self: flex-end;"></div>
+            </div>
+            <script>
+            for (let i = 0; i < ({{ inv_amt * mult }} ); i++ ){
+                if (i < 20){
+                    $('#p2_cash1').append('<img src="../static/images/cash.png" style="width: 2em; height: auto;">')
+                } else if (20< i< 40){
+                    $('#p2_cash2').append('<img src="../static/images/cash.png" style="width: 2em; height: auto;">')
+                } else if (i > 40){
+                    $('#p2_cash3').append('<img src="../static/images/cash.png" style="width: 2em; height: auto;">')}
+                }
+        </script>
+        </div>
+</div>
+    <div class="row">
+        <div class="col" id="p2_total">
+            <h2 style="font-size: xxx-large;"> Wilson: $0</h2>
+        </div>
+    </div>
+    <script>
+        setTimeout(function(){
+            $('#p2_total h2').text('Wilson: ${{ inv_amt * mult }}');
+            $('#p2_cash').css('opacity', 1);
+        }, 3100)
+    </script>
+
+{% endblock %}
+
+
+</body>
+
+
+</html>

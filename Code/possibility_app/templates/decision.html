@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+
+{% extends "predict.html" %}
+{% block head %} {{ super() }}{% endblock %}
+{% block js %}
+    {{ super() }}
+    <script>
+        document.body.addEventListener("keydown", function (event) {
+            if (event.key === "Enter") {
+                if (Number({{ trial_num }}) === Number({{ last_trl }})) {
+                    next="thanks";
+                } else if (Number({{ trial_num }}) % Number({{ interval }}) === 0) {
+                    next="guesswhy"
+                } else {
+                    next="invest"
+                }
+            window.location.href = next;
+            }
+        });
+    </script>
+{% endblock %}
+{% block p1_pic %}
+{{ super() }}
+    <script>
+    $('.p1_expect').css('display', 'none');
+    $('#p1_bubble').css('display', 'none');
+    </script>
+{% endblock %}
+
+
+{% block center_top %}
+    {{ super() }}
+    <script>
+        if (Number(localStorage.getItem('prediction')) === {{ ret }}){
+            $('#trial_info').append('<p>You predicted he would return $'+localStorage.getItem('prediction')+'.</p><br><h2>You were correct!</h2>');
+        } else {
+            $('#trial_info').append('<br><p>You predicted he would return $'+localStorage.getItem('prediction')+'.</p>');
+        }
+    </script>
+{% endblock %}
+
+{% block center_mid %}
+    {{ super() }}
+    <script>
+        sub_pred = Number(localStorage.getItem('prediction'))
+        full_fill = Number(localStorage.getItem('full_fill'))
+        guess_fill = Number(localStorage.getItem('guess_fill'))
+        $("#prompt p").text(' You were off by '+ Math.abs({{ ret }} - sub_pred));
+        $("#pred_slider").val({{ ret }}).change();
+        $("#predamt").text('He returned ${{ ret }}').css('font-size', 'xxx-large')
+
+        if (sub_pred === 0) {
+            $(".rangeslider__fill").css('background', 'red');
+            console.log('the pred was zero')
+        } else if (sub_pred == {{ inv_amt*mult }}){
+            $("#js-rangeslider-0").prepend('<div class="rangeslider__fill" id="predError" style="background:red; left: 0; height:100%; width: ' + (guess_fill+20).toString() + 'px; " ></div>');
+        }else if (sub_pred < {{ ret }}) {
+            console.log('the pred was Less')
+            x = (guess_fill/full_fill) * 100;
+            y = ({{ ret/(inv_amt*mult)}}) * 100;
+            A = Math.abs(y - x) ;
+            $(".rangeslider__handle").before('<div class="rangeslider__fill" id="predError" style="background:red; left:'+guess_fill.toString()+'px; height:100%; width:' + A.toString() + '%; " ></div>');
+        } else if (sub_pred > {{ ret }}) {
+            console.log('the pred was too high')
+            $("#js-rangeslider-0").prepend('<div class="rangeslider__fill" id="predError" style="background:red; left: 0; height:100%; width: ' + guess_fill.toString() + 'px; " ></div>');
+        } else{};
+    </script>
+
+{% endblock %}
+
+{% block center_bttm %}
+    <div class="col align-self-end">
+            <p style="font-size: x-large;">Press Enter to Continue</p>
+    </div>
+{% endblock %}
+
+{%  block right_top %}
+{% endblock %}
+
+{% block right_bttm %}
+    <div class="row">
+        <div class="col" style="align-self: flex-end;" >
+            <img src="../static/images/wilson.png" style="max-width: 100%;" id="p2pic">
+        </div>
+        <div class="col" id="p2_cash" style="align-self: flex-end;">
+            <div class="row">
+                <div class="col" id="p2_cash1" style="list-style: none; align-self: flex-end;"></div>
+                <div class="col" id="p2_cash2" style="list-style: none; align-self: flex-end;"></div>
+                <div class="col" id="p2_cash3" style="list-style: none; align-self: flex-end;"></div>
+            </div>
+            <script>
+            for (let i = 0; i < ({{ (inv_amt * mult)- ret }} ); i++ ){
+                if (i < 20){
+                    $('#p2_cash1').append('<img src="../static/images/cash.png" style="width: 2em; height: auto;">')
+                } else if (20< i< 40){
+                    $('#p2_cash2').append('<img src="../static/images/cash.png" style="width: 2em; height: auto;">')
+                } else if (i > 40){
+                    $('#p2_cash3').append('<img src="../static/images/cash.png" style="width: 2em; height: auto;">')}
+                }
+        </script>
+        </div>
+</div>
+    <div class="row">
+        <div class="col" id="p2_total">
+            <h2 style="font-size: xxx-large;"> Wilson: ${{ (inv_amt * mult)- ret }}</h2>
+        </div>
+    </div>
+{% endblock %}
+
+</html>

@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html>
+{% extends  "base.html" %}
+{% block head %} {{ super() }}{% endblock %}
+{%  block js %}
+    <script>
+        const queryString = window.location.search;
+        const urlParams = new URLSearchParams(queryString);
+    </script>
+
+
+{% endblock %}
+<body>
+{{ super() }}
+{% block p1_col %}
+    <script>$('#left_col').removeClass('col-sm-3')</script>
+{% endblock %}
+{% block p2_col %}
+    <script>$('#right_col').removeClass('col-sm-3')</script>
+{% endblock %}
+{% block wall1 %}{% endblock %}
+{% block wall2 %}{% endblock %}
+
+
+{% block center_top %}
+    <script>$('#center_top ').css('height', '20%')</script>
+{% endblock %}
+
+{% block center_mid %}
+<script>$('#center_col').removeClass('col-sm-4')</script>
+
+<h1> Consent</h1>
+<div id="container-consent" style="background-color: #bfd5f4; color:black;">
+    <div id="consent">
+                <h1>We need your consent to proceed</h1>
+                <p id="loc" style="font-size: 45px"></p>
+
+                <hr />
+                <div class="legal well" style="background-color: white; color: black">
+                 <p style="font-style:italic; font-weight: bold; font-size: 1em;">(Please scroll down to see all consent information.)</p>
+                    <p>This project is being conducted by researchers from the department of Psychological and Brain Sciences at Dartmouth College, Hanover, NH, USA. The purpose of the study is to investigate how individuals make social-decisions and social-judgments about their own preferences and beliefs, and the preferences and beliefs of others. </p>
+                    <p>Your participation is voluntary.  Participation involves observing, and making behavioral judgments about another person. The other person will be participating in a series of financial games, in which he will decide how to allocate money between himself and another party. Lastly you may be asked to rate this person on several social dimensions (e.g. trust, liking).  These ratings will not be shown to the other participant(s). You may choose to not answer any or all questions.</p>
+                    <p>The information collected will be anonymous and no identifying information will be stored with the data collected during the experiment. Identifying information will not be used in any presentation or paper written about this project and such presentations will represent the aggregation of data from groups of people. </p>
+
+                    <p>Questions about this project may be directed to:</p>
+                    <br>
+                    <p>Bryan Gonzalez, graduate-researcher</p>
+                    <p>6207 Moore Hall, Hanover, NH 03755.</p>
+                    <p>Phone: (603) 646 3181</p>
+                    <p>Email: bryan.s.gonzalez.GR@dartmouth.edu</p>
+
+
+
+
+
+                    <button type="button" class="btn btn-default btn-sm" onClick="window.print();">
+                    <span class="glyphicon glyphicon-print"></span> Print a copy of this
+                    </button>
+                </div>
+
+                <hr />
+                <h4>Do you understand and consent to these terms?</h4>
+                <br />
+
+                <center>
+                    <button type="button" id="consent-btn" class="btn btn-primary btn-lg">
+                    <span class="glyphicon glyphicon-ok"></span> I agree
+                    </button>
+                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                    <button type="button" class="btn btn-danger btn-lg" onClick="onexit()">
+                    <span class="glyphicon glyphicon-ban-circle"></span> No thanks, I do not want to do this
+                    </button>
+                </center>
+            </div>
+</div>
+    <script>
+    $('#consent-btn').click( function(e) {
+        $.ajax({
+            type: "POST",
+            url: "consent",
+            data: JSON.stringify({"subject_id": 'labmember', "prolific_id": Math.random().toString() }), // urlParams.get('PID') if on prolific
+            traditional: true,
+            contentType: "application/json; charset=utf-8",
+            dataType: 'json',
+            success: function (){window.location.href="instructions"}
+        });
+    });
+    </script>
+{% endblock %}
+</body>
+</html>
