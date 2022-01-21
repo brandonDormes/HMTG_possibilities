@@ -1,4 +1,4 @@
-from flask import render_template, request, session, make_response, redirect
+from flask import render_template, request, session, make_response, redirect, url_for
 from . import app, db
 from .models import Subject, Trial
 from flask_session import sessions
@@ -8,10 +8,13 @@ import random
 
 
 game_dat = pd.read_csv('Code/possibility_app/static/stim_data/HMTG_possib_stim.csv', header=0, index_col=0)
+#app.app_context()
+#game_dat= pd.read_csv(url_for('static', filename='stim_data/HMTG_possib_stim.csv'), header=0, index_col=0)
 ntrials = 10
 game_dat = game_dat.iloc[:ntrials]  # beta test, less trials
 p1s = list(range(79))
 probe_interval = 3
+game_dat = pd.DataFrame({'inv':[6,10,2], 'mult':[4,2,4], 'ret':[15, 10, 2], 'IM':[24,20, 8]})
 
 
 @app.route('/')

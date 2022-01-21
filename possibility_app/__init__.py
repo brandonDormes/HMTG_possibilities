@@ -8,6 +8,7 @@ app = Flask(__name__)
 app.config['SECRET_KEY'] = 'dfkjfsdlf'
 app.config['SQLALCHEMY_DATABASE_URI'] = "sqlite:///hmtg_possib_DB.db"
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+app.add_url_rule('/static', 'static/')
 
 db = SQLAlchemy(app)
 cors = CORS(app)
