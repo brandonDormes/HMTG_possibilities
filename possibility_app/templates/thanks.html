@@ -17,7 +17,10 @@
                 <textarea type="text" id="trial_text" autocomplete="off" style="border-radius: .5em; font-size: x-large; width: inherit;"></textarea>
                 <br>
     </form>
-<a href="https://app.prolific.co/submissions/complete?cc=XXX" onclick="submitReason()">Complete Prolific Task</a>
+    <div class="col" id="done">
+        <a href="#"  type="button"  onclick="submitReason()" id="done" class="btn btn-primary" style="font-size: xxx-large;">Finish</a>
+    </div>
+<!--button href="https://app.prolific.co/submissions/complete?cc=XXX"  class="btn-lg" onclick="submitReason()" style="font-size: xxx-large">Finish</button-->
 <script>
 function submitReason(){
             console.log('Reasons were submitted.')

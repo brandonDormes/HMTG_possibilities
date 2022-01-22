@@ -51,6 +51,24 @@ def instructions():
     return render_template('instructions.html')
 
 
+@app.route('/practice', methods=['GET', 'POST'])
+def practice():
+    random.shuffle(p1s)
+    session['practice'] = True
+    return render_template('practice.html',
+                           trial_num='Practice',
+                           p1=p1s[0],
+                           inv_amt=10,
+                           mult=4)
+
+
+@app.route('/ready')
+def ready():
+    session['practice'] = False
+    return render_template('ready.html')
+
+
+
 @app.route('/invest', methods=['GET', 'POST'])
 def invest():
     random.shuffle(p1s)
@@ -58,16 +76,26 @@ def invest():
     return render_template('invest.html', trial_num=session['trial']+1,
                            p1=session['p1'],
                            inv_amt=game_dat.inv[session['trial']],
-                           mult=game_dat.mult[session['trial']])
+                           mult=game_dat.mult[session['trial']],
+                           ntrials=ntrials)
 
 
 @app.route('/predict', methods=['GET', 'POST'])
 def predict():
     if request.method == 'GET':
-        return render_template('predict.html', trial_num=session['trial']+1,
-                               p1=session['p1'],
-                               inv_amt=game_dat.inv[session['trial']],
-                               mult=game_dat.mult[session['trial']])
+        if session['practice']:
+            return render_template('predict.html', trial_num='Practice',
+                                   p1=p1s[0],
+                                   inv_amt=10,
+                                   mult=4,
+                                   ntrials='')
+        else:
+            return render_template('predict.html', trial_num=session['trial']+1,
+                                   p1=session['p1'],
+                                   inv_amt=game_dat.inv[session['trial']],
+                                   mult=game_dat.mult[session['trial']],
+                                   ntrials=ntrials)
+
     elif request.method == 'POST':
         trial_dat = request.get_json()
         tdat = Trial(trl=session['trial'],
@@ -87,15 +115,26 @@ def predict():
 
 @app.route('/decision', methods=['GET', 'POST'])
 def decision():
-    session['trial'] = session['trial'] + 1  # FIX THIS
-    if request.method == 'GET':
-        return render_template('decision.html', trial_num=session['trial'], # trial was incremented after prediction
-                               p1=session['p1'],
-                               inv_amt=game_dat.inv[session['trial']-1],
-                               mult=game_dat.mult[session['trial']-1],
-                               ret=game_dat.ret[session['trial']-1],
+    if session['practice']:
+        return render_template('decision.html', trial_num="Practice",  # trial was incremented after prediction
+                               p1=p1s[0],
+                               inv_amt=10,
+                               mult=4,
+                               ret=15,
                                interval=probe_interval,
-                               last_trl=ntrials)
+                               last_trl=ntrials,
+                               ntrials='')
+    else:
+        session['trial'] = session['trial'] + 1  # FIX THIS
+        if request.method == 'GET':
+            return render_template('decision.html', trial_num=session['trial'], # trial was incremented after prediction
+                                   p1=session['p1'],
+                                   inv_amt=game_dat.inv[session['trial']-1],
+                                   mult=game_dat.mult[session['trial']-1],
+                                   ret=game_dat.ret[session['trial']-1],
+                                   interval=probe_interval,
+                                   last_trl=ntrials,
+                                   ntrials=ntrials)
 
 
 @app.route('/guesswhy', methods=['GET', 'POST'])
@@ -105,7 +144,8 @@ def guessWhy():
                                p1=session['p1'],
                                inv_amt=game_dat.inv[session['trial']-1],
                                mult=game_dat.mult[session['trial']-1],
-                               ret=game_dat.ret[session['trial']-1])
+                               ret=game_dat.ret[session['trial']-1],
+                               ntrials=ntrials)
     if request.method == 'POST':
         answer = request.get_json()
         print(answer)
@@ -122,7 +162,7 @@ def guessWhy():
 def thanks():
     subj = Subject.query.filter_by(prolific_id=session['prolific_id']).first()
     if request.method == 'GET':
-        tt = random.randint(0, ntrials)
+        tt = random.randint(1, ntrials-1)
         trl = Trial.query.filter_by(trl=tt, subject_id=session['subject_tableindex']).first()
         pe = abs((trl.pred/(trl.inv*trl.mult)) - (trl.ret/(trl.inv*trl.mult)))
         acc = 1 - pe

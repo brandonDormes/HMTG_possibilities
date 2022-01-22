@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html>
+{% extends  "base.html" %}
+{% block head %} {{ super() }}{% endblock %}
+<body>
+{{ super() }}
+{% block wall1 %}{% endblock %}
+{% block wall2 %}{% endblock %}
+{% block center_mid %}
+    <h1> Ready to begin?</h1>
+    <br>
+    <div class="row">
+    <div class="col" id="go">
+        <a href="#"  type="button"  onclick='window.location.href = "practice"' id="done" class="btn btn-primary" style="font-size: xxx-large;">Try Again</a>
+    </div>
+    <div class="col" id="done">
+        <a href="#"  type="button"  onclick='window.location.href = "invest"' id="done" class="btn btn-primary" style="font-size: xxx-large;">Begin</a>
+    </div>
+    </div>
+<!--h3>Press Enter to Continue...</h3>
+    <script>document.body.addEventListener("keydown", function (event) {
+            if (event.key === "Enter") {window.location.href = "invest";}
+        });</script>
+{% endblock %}
+</body>
+</html>

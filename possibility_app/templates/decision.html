@@ -8,7 +8,9 @@
     <script>
         document.body.addEventListener("keydown", function (event) {
             if (event.key === "Enter") {
-                if (Number({{ trial_num }}) === Number({{ last_trl }})) {
+                if (({{ trial_num|tojson }}) === "Practice") {
+                    next="ready";
+                } else if (Number({{ trial_num }}) === Number({{ last_trl }})) {
                     next="thanks";
                 } else if (Number({{ trial_num }}) % Number({{ interval }}) === 0) {
                     next="guesswhy"
