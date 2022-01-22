@@ -4,7 +4,12 @@
 {% extends "decision.html" %}
 
 {% block head %} {{ super() }}{% endblock %}
-{% block js %}{{ super() }}{% endblock %}
+{% block js %}
+    {{ super() }}
+    <script>
+        init_time = Date.now();
+    </script>
+{% endblock %}
 
 
 {% block center_mid %}
@@ -57,7 +62,7 @@
         <div class="row justify-content-center" style="height: 18%;" id="guess_text">
             <form method="post" action="invest">
                 <label></label>
-                <textarea type="text" id="trial_text" autocomplete="off" onkeyup="if (this.textLength !== 0){submit.disabled = false} else {submit.disabled = true}" style="border-radius: .5em; font-size: x-large; width: inherit;"></textarea>
+                <textarea type="text" id="trial_text" autocomplete="off" onkeyup="startTime = Date.now(); if (this.textLength !== 0){submit.disabled = false} else {submit.disabled = true}" style="border-radius: .5em; font-size: x-large; width: inherit;"></textarea>
                 <br>
                 <div class="col" id="submit_reason">
                     <p class="submit">
@@ -73,7 +78,10 @@
             $.ajax({
                 type: "POST",
                 url: "guesswhy",
-                data: JSON.stringify({"subject_response": document.getElementById("trial_text").value}),
+                data: JSON.stringify({"subject_response": document.getElementById("trial_text").value,
+                    'resp_start': (startTime-init_time),
+                    'resp_end': (Date.now() - startTime)
+                }),
                 traditional: true,
                 contentType: "application/json; charset=utf-8",
                 dataType: 'json',
