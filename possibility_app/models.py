@@ -9,6 +9,7 @@ class Subject(db.Model):
     trustee_id = db.Column(db.Integer)
     trial_order = db.Column(db.Integer)
     bonus = db.Column(db.Float)
+    exp_feedback = db.Column(db.VARCHAR(300))
     trials = db.relationship('Trial', backref='subject', lazy='dynamic', cascade="all, delete-orphan")
 
     def __repr__(self):
@@ -25,7 +26,8 @@ class Trial(db.Model):
     pred = db.Column(db.Integer)
     ret = db.Column(db.Integer)
     reason = db.Column(db.VARCHAR(200))
-    reason_rt = db.Column(db.DateTime)
+    reason_start = db.Column(db.Integer) # time to start writing
+    reason_rt = db.Column(db.Integer) # time to submit response
     subject_id = db.Column(db.Integer, db.ForeignKey('subjects.id'))
 
     def __repr__(self):
