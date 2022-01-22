@@ -36,6 +36,8 @@
 
     document.body.addEventListener("keydown", function (event) {
         if (event.key === "Enter") {
+            trial_pred = parseInt(trial_pred)
+            if (window.location.pathname === '/predict'){localStorage.setItem('guess_fill', document.getElementById('greenslider').clientWidth);}
             localStorage.setItem('prediction', trial_pred)
             $.ajax({
                 type: "POST",
