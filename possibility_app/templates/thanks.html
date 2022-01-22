@@ -8,9 +8,30 @@
 {% block wall2 %}{% endblock %}
 {% block center_mid %}
 <h1> You've finished the Prediction Game!</h1>
-<h3>Thanks for playing! Your bonus is: ${{ bonus }}</h3>
-    <a href="https://app.prolific.co/submissions/complete?cc=XXX">Complete Prolific Task</a>
-
+<h3 style="color: #d02eab">Thanks for playing! Your bonus is: ${{ bonus }}</h3>
+    <br><br>
+    <h3><i>Tell us what you thought of the game?</i></h3>
+    <h4>Did you use a strategy when predicting? Did you find anything odd or confusing? experience technical difficulties?</h4>
+    <form method="post" >
+                <label></label>
+                <textarea type="text" id="trial_text" autocomplete="off" style="border-radius: .5em; font-size: x-large; width: inherit;"></textarea>
+                <br>
+    </form>
+<a href="https://app.prolific.co/submissions/complete?cc=XXX" onclick="submitReason()">Complete Prolific Task</a>
+<script>
+function submitReason(){
+            console.log('Reasons were submitted.')
+            $.ajax({
+                type: "POST",
+                url: "thanks",
+                data: JSON.stringify({"subject_feedback": document.getElementById("trial_text").value}),
+                traditional: true,
+                contentType: "application/json; charset=utf-8",
+                dataType: 'json',
+                success: function(){window.location.href = "https://app.prolific.co/submissions/complete?cc=XXX";}
+            });
+        }
+</script>
 {% endblock %}
 </body>
 </html>
