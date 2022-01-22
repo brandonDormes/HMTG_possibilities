@@ -1,18 +1,17 @@
-from flask import render_template, request, session, make_response, redirect, url_for
+from flask import render_template, request, session, make_response, redirect
 from . import app, db
 from .models import Subject, Trial
-from flask_session import sessions
-
 import pandas as pd
 import random
 
 
-#game_dat = pd.read_csv('Code/possibility_app/static/stim_data/HMTG_possib_stim.csv', header=0, index_col=0)
-#app.app_context()
-#game_dat= pd.read_csv(url_for('static', filename='stim_data/HMTG_possib_stim.csv'), header=0, index_col=0)
-ntrials = 10
-game_dat = pd.DataFrame({'inv':[6,10,2], 'mult':[4,2,4], 'ret':[15, 10, 2], 'IM':[24,20, 8]})
+# Local
+game_dat = pd.read_csv('possibility_app/static/stim_data/HMTG_possib_stim.csv', header=0, index_col=0)
+# Remote
+#game_dat = pd.read_csv('/home/bryan/HMTG_project/possibility_app/static/stim_data/HMTG_possib_stim.csv', header=0, index_col=0)
+#game_dat = pd.DataFrame({'inv':[6,10,2], 'mult':[4,2,4], 'ret':[15, 10, 2], 'IM':[24,20, 8]})
 
+ntrials = 4
 game_dat = game_dat.iloc[:ntrials]  # beta test, less trials
 p1s = list(range(79))
 probe_interval = 3
@@ -88,9 +87,8 @@ def predict():
 
 @app.route('/decision', methods=['GET', 'POST'])
 def decision():
+    session['trial'] = session['trial'] + 1  # FIX THIS
     if request.method == 'GET':
-        session['trial'] = session['trial'] + 1  # FIX THIS
-
         return render_template('decision.html', trial_num=session['trial'], # trial was incremented after prediction
                                p1=session['p1'],
                                inv_amt=game_dat.inv[session['trial']-1],
@@ -113,21 +111,31 @@ def guessWhy():
         print(answer)
         tdat = Trial.query.filter_by(trl=session['trial']-1, subject_id=session['subject_tableindex']).first()
         tdat.reason = answer['subject_response']
+        tdat.reason_start = answer['resp_start']
+        tdat.reason_rt = answer['resp_end']
         db.session.add(tdat)
         db.session.commit()
         return make_response("200")
 
 
-@app.route('/thanks')
+@app.route('/thanks', methods=['GET', 'POST'])
 def thanks():
-    tt = random.randint(0, ntrials)
-    trl = Trial.query.filter_by(trl=tt, subject_id=session['subject_tableindex']).first()
-    pe = abs((trl.pred/(trl.inv*trl.mult)) - (trl.ret/(trl.inv*trl.mult)))
-    acc = 1 - pe
-    bonus = 2 * acc
-    #bonus = ((100 - abs(((trl.pred / game_dat.IM[tt]) * 100) - ((trl.ret / game_dat.IM[tt]) * 100))) * .01) * 2
     subj = Subject.query.filter_by(prolific_id=session['prolific_id']).first()
-    subj.bonus = bonus
-    db.session.add(subj)
-    db.session.commit()
-    return render_template('thanks.html', bonus=bonus)
+    if request.method == 'GET':
+        tt = random.randint(0, ntrials)
+        trl = Trial.query.filter_by(trl=tt, subject_id=session['subject_tableindex']).first()
+        pe = abs((trl.pred/(trl.inv*trl.mult)) - (trl.ret/(trl.inv*trl.mult)))
+        acc = 1 - pe
+        bonus = round((2 * acc), 2)
+        #bonus = ((100 - abs(((trl.pred / game_dat.IM[tt]) * 100) - ((trl.ret / game_dat.IM[tt]) * 100))) * .01) * 2
+        subj.bonus = bonus
+        db.session.add(subj)
+        db.session.commit()
+        return render_template('thanks.html', bonus=bonus)
+
+    if request.method == 'POST':
+        answer = request.get_json()
+        subj.exp_feedback = answer['subject_feedback']
+        db.session.add(subj)
+        db.session.commit()
+        return make_response('200')
