@@ -7,7 +7,24 @@
 {% block js %}
     {{ super() }}
     <script>
+        document.body.removeEventListener("keydown", getNext);
         init_time = Date.now();
+    </script>
+{% endblock %}
+
+{% block center_top %}
+    {{ super() }}
+    <script>
+       /* if (Number(localStorage.getItem('prediction')) === {{ ret }}){
+            $('#trial_info').append('<p>You predicted he would return $'+localStorage.getItem('prediction')+'.</p><br><h2>You were correct!</h2>');
+        } else {
+            $('#trial_info').append('<br><p>You predicted he would return $'+localStorage.getItem('prediction')+'.</p>');
+        }*/
+       /*if (Number({{ pred }}) === {{ ret }}){
+            $('#trial_info').append('<p>You predicted he would return $'+ {{ pred }}+'.</p><br><h2>You were correct!</h2>');
+        } else {
+            $('#trial_info').append('<br><p>You predicted he would return $'+ {{ pred }}+'.</p>');
+        }*/
     </script>
 {% endblock %}
 

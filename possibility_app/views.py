@@ -11,7 +11,7 @@ game_dat = pd.read_csv('possibility_app/static/stim_data/HMTG_possib_stim.csv', 
 #game_dat = pd.read_csv('/home/bryan/HMTG_project/possibility_app/static/stim_data/HMTG_possib_stim.csv', header=0, index_col=0)
 #game_dat = pd.DataFrame({'inv':[6,10,2], 'mult':[4,2,4], 'ret':[15, 10, 2], 'IM':[24,20, 8]})
 
-ntrials = 4
+ntrials = 10
 game_dat = game_dat.iloc[:ntrials]  # beta test, less trials
 p1s = list(range(79))
 probe_interval = 3
@@ -140,11 +140,13 @@ def decision():
 @app.route('/guesswhy', methods=['GET', 'POST'])
 def guessWhy():
     if request.method == 'GET':
+        tdat = Trial.query.filter_by(trl=session['trial'] - 1, subject_id=session['subject_tableindex']).first()
         return render_template('guesswhy.html', trial_num=session['trial'],
                                p1=session['p1'],
                                inv_amt=game_dat.inv[session['trial']-1],
                                mult=game_dat.mult[session['trial']-1],
                                ret=game_dat.ret[session['trial']-1],
+                               pred=tdat.pred,
                                ntrials=ntrials)
     if request.method == 'POST':
         answer = request.get_json()
