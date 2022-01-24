@@ -71,7 +71,7 @@ def ready():
 
 @app.route('/invest', methods=['GET', 'POST'])
 def invest():
-    random.shuffle(p1s)
+
     session['p1'] = p1s.pop()
     return render_template('invest.html', trial_num=session['trial']+1,
                            p1=session['p1'],
