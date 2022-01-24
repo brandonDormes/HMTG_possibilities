@@ -54,10 +54,11 @@ def instructions():
 @app.route('/practice', methods=['GET', 'POST'])
 def practice():
     random.shuffle(p1s)
+    session['p1'] = p1s.pop()
     session['practice'] = True
     return render_template('practice.html',
                            trial_num='Practice',
-                           p1=p1s[0],
+                           p1=session['p1'],
                            inv_amt=10,
                            mult=4)
 
@@ -71,7 +72,6 @@ def ready():
 
 @app.route('/invest', methods=['GET', 'POST'])
 def invest():
-
     session['p1'] = p1s.pop()
     return render_template('invest.html', trial_num=session['trial']+1,
                            p1=session['p1'],
@@ -85,7 +85,7 @@ def predict():
     if request.method == 'GET':
         if session['practice']:
             return render_template('predict.html', trial_num='Practice',
-                                   p1=p1s[0],
+                                   p1=session['p1'],
                                    inv_amt=10,
                                    mult=4,
                                    ntrials='')
@@ -117,7 +117,7 @@ def predict():
 def decision():
     if session['practice']:
         return render_template('decision.html', trial_num="Practice",  # trial was incremented after prediction
-                               p1=p1s[0],
+                               p1=session['p1'],
                                inv_amt=10,
                                mult=4,
                                ret=15,
