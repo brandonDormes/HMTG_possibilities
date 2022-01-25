@@ -3,19 +3,13 @@ from . import app, db
 from .models import Subject, Trial
 import pandas as pd
 import random
+import numpy as np
+from ast import literal_eval
 
 
-# Local
-game_dat = pd.read_csv('possibility_app/static/stim_data/HMTG_possib_stim.csv', header=0, index_col=0)
-# Remote
-#game_dat = pd.read_csv('/home/bryan/HMTG_project/possibility_app/static/stim_data/HMTG_possib_stim.csv', header=0, index_col=0)
-#game_dat = pd.DataFrame({'inv':[6,10,2], 'mult':[4,2,4], 'ret':[15, 10, 2], 'IM':[24,20, 8]})
-
-ntrials = 10
-game_dat = game_dat.iloc[:ntrials]  # beta test, less trials
+trustee_to_observe = 93
+ntrials = 45
 p1s = list(range(79))
-probe_interval = 3
-
 
 @app.route('/')
 def index():
@@ -36,9 +30,10 @@ def consent():
         s_dat = request.get_json()
         session['prolific_id'] = s_dat['prolific_id']
         subj = Subject(subID=s_dat['subject_id'], prolific_id=s_dat['prolific_id'],
-                       trustee_id=int(game_dat.trustee[0]), trial_order=1)
+                       trustee_id=int(93), trial_order=1)
         db.session.add(subj)
         db.session.commit()
+        print('You have a new Subject')
         return make_response("200")
 
 
@@ -65,9 +60,22 @@ def practice():
 
 @app.route('/ready')
 def ready():
+    # Probes: fixed after first trial, then uniformly sampled
+    probes = [0]
+    [probes.append(np.random.choice([t - 1, t, t + 1])) for t in range(1, ntrials) if t % 4 == 0]
+    session['probes'] = str(probes)
+    # Local
+    game_dat = pd.read_csv('possibility_app/static/stim_data/HMTG_possib_stim.csv', header=0, index_col=0)
+    # Remote
+    # game_dat = pd.read_csv('/home/bryan/HMTG_project/possibility_app/static/stim_data/HMTG_possib_stim.csv', header=0, index_col=0)
+    game_dat = game_dat.loc[game_dat.trustee == trustee_to_observe]  # 97, 54, 62
+    game_dat = game_dat.iloc[:ntrials]  # beta test, less trials
+    game_dat = game_dat.sample(frac=1, random_state=np.random.RandomState()).reset_index(drop=True)
+    game_dat['trial'] = range(ntrials)
+    session['stim'] = game_dat.to_dict()
     session['practice'] = False
+    print(probes)
     return render_template('ready.html')
-
 
 
 @app.route('/invest', methods=['GET', 'POST'])
@@ -75,8 +83,8 @@ def invest():
     session['p1'] = p1s.pop()
     return render_template('invest.html', trial_num=session['trial']+1,
                            p1=session['p1'],
-                           inv_amt=game_dat.inv[session['trial']],
-                           mult=game_dat.mult[session['trial']],
+                           inv_amt=session['stim']['inv'][str(session['trial'])],
+                           mult=session['stim']['mult'][str(session['trial'])],
                            ntrials=ntrials)
 
 
@@ -92,23 +100,24 @@ def predict():
         else:
             return render_template('predict.html', trial_num=session['trial']+1,
                                    p1=session['p1'],
-                                   inv_amt=game_dat.inv[session['trial']],
-                                   mult=game_dat.mult[session['trial']],
+                                   inv_amt=session['stim']['inv'][str(session['trial'])],
+                                   mult=session['stim']['mult'][str(session['trial'])],
                                    ntrials=ntrials)
 
     elif request.method == 'POST':
-        trial_dat = request.get_json()
-        tdat = Trial(trl=session['trial'],
-                     p1_pic=session['p1'],
-                     inv=int(game_dat.inv[session['trial']]),
-                     mult=int(game_dat.mult[session['trial']]),
-                     pred=int(trial_dat['trial_prediction']),
-                     ret=int(game_dat.ret[session['trial']]),
-                     reason='n/a',
-                     subject_id=session['subject_tableindex'])
-        db.session.add(tdat)
-        db.session.commit()
-        print(trial_dat)
+        if session['practice'] == False:
+            trial_dat = request.get_json()
+            tdat = Trial(trl=session['trial'],
+                         p1_pic=session['p1'],
+                         inv=int(session['stim']['inv'][str(session['trial'])]),
+                         mult=int(session['stim']['mult'][str(session['trial'])]),
+                         pred=int(trial_dat['trial_prediction']),
+                         ret=int(session['stim']['ret'][str(session['trial'])]),
+                         reason='n/a',
+                         subject_id=session['subject_tableindex'])
+            db.session.add(tdat)
+            db.session.commit()
+            print(trial_dat)
 
         return make_response("200")
 
@@ -121,18 +130,22 @@ def decision():
                                inv_amt=10,
                                mult=4,
                                ret=15,
-                               interval=probe_interval,
+                               interval=999, #.join([str(e) for e in probes]),
                                last_trl=ntrials,
                                ntrials='')
     else:
         session['trial'] = session['trial'] + 1  # FIX THIS
         if request.method == 'GET':
+            if session['trial']-1 in literal_eval(session['probes']):
+                interval = 111
+            else:
+                interval = 999
             return render_template('decision.html', trial_num=session['trial'], # trial was incremented after prediction
                                    p1=session['p1'],
-                                   inv_amt=game_dat.inv[session['trial']-1],
-                                   mult=game_dat.mult[session['trial']-1],
-                                   ret=game_dat.ret[session['trial']-1],
-                                   interval=probe_interval,
+                                   inv_amt=session['stim']['inv'][str(session['trial']-1)],
+                                   mult=session['stim']['mult'][str(session['trial']-1)],
+                                   ret=session['stim']['ret'][str(session['trial']-1)],
+                                   interval=interval,
                                    last_trl=ntrials,
                                    ntrials=ntrials)
 
@@ -143,9 +156,9 @@ def guessWhy():
         tdat = Trial.query.filter_by(trl=session['trial'] - 1, subject_id=session['subject_tableindex']).first()
         return render_template('guesswhy.html', trial_num=session['trial'],
                                p1=session['p1'],
-                               inv_amt=game_dat.inv[session['trial']-1],
-                               mult=game_dat.mult[session['trial']-1],
-                               ret=game_dat.ret[session['trial']-1],
+                               inv_amt=session['stim']['inv'][str(session['trial'] - 1)],
+                               mult=session['stim']['mult'][str(session['trial'] - 1)],
+                               ret=session['stim']['ret'][str(session['trial'] - 1)],
                                pred=tdat.pred,
                                ntrials=ntrials)
     if request.method == 'POST':
