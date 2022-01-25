@@ -4,3 +4,4 @@
 *.idea
 *.DS*
 */__init__.py
+*/views_old.py
