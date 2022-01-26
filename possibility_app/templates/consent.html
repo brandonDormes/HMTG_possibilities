@@ -21,7 +21,12 @@
             }
             return b;
   }
-
+        function getURLVariable(whichvar){
+            if(typeof query_string == 'undefined'){
+                query_string = getQueryString();
+            }
+            return query_string[whichvar];
+        }
     </script>
 
 
@@ -100,7 +105,7 @@
         $.ajax({
             type: "POST",
             url: "consent",
-            data: JSON.stringify({"subject_id": 'prolific_subject', "prolific_id": getQueryString()['PROLIFIC_PID']}), // urlParams.get('PID') if on prolific
+            data: JSON.stringify({"subject_id": 'prolific_subject', "prolific_id": getURLVariable('PROLIFIC_PID')}), // urlParams.get('PID') if on prolific
             traditional: true,
             contentType: "application/json; charset=utf-8",
             dataType: 'json',
