@@ -28,8 +28,10 @@ def consent():
         return render_template('consent.html')
     elif request.method == 'POST':
         s_dat = request.get_json()
-        session['prolific_id'] = s_dat['prolific_id']
-        subj = Subject(subID=s_dat['subject_id'], prolific_id=s_dat['prolific_id'],
+        p_id = request.args.get('PROLIFIC_PID', default=str(np.random.rand()), type=str)
+
+        session['prolific_id'] = p_id
+        subj = Subject(subID=s_dat['subject_id'], prolific_id=p_id,
                        trustee_id=int(93), trial_order=1)
         db.session.add(subj)
         db.session.commit()

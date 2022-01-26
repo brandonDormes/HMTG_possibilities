@@ -4,31 +4,8 @@
 {% block head %} {{ super() }}{% endblock %}
 {%  block js %}
     <script>
-        const queryString = window.location.search;
-        const urlParams = new URLSearchParams(queryString);
 
-        function getQueryString() {
-            var a = window.location.search.substr(1).split('&');
-            if (a == "") return {};
-            var b = {};
-            for (var i = 0; i < a.length; ++i)
-            {
-                var p=a[i].split('=', 2);
-                if (p.length == 1)
-                    b[p[0]] = "";
-                else
-                    b[p[0]] = decodeURIComponent(p[1].replace(/\+/g, " "));
-            }
-            return b;
-  }
-        function getURLVariable(whichvar){
-            if(typeof query_string == 'undefined'){
-                query_string = getQueryString();
-            }
-            return query_string[whichvar];
-        }
     </script>
-
 
 {% endblock %}
 <body>
@@ -105,7 +82,7 @@
         $.ajax({
             type: "POST",
             url: "consent",
-            data: JSON.stringify({"subject_id": 'prolific_subject', "prolific_id": getURLVariable('PROLIFIC_PID')}), // urlParams.get('PID') if on prolific
+            data: JSON.stringify({"subject_id": 'prolific_subject', "prolific_id": Math.random()}), // urlParams.get('PID') if on prolific
             traditional: true,
             contentType: "application/json; charset=utf-8",
             dataType: 'json',
