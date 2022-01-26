@@ -4,7 +4,7 @@
 {% block head %} {{ super() }}{% endblock %}
 {%  block js %}
     <script>
-
+        <script src="../static/jspsych.js"></script>
     </script>
 
 {% endblock %}
@@ -82,7 +82,7 @@
         $.ajax({
             type: "POST",
             url: "consent",
-            data: JSON.stringify({"subject_id": 'prolific_subject', "prolific_id": Math.random()}), // urlParams.get('PID') if on prolific
+            data: JSON.stringify({"subject_id": 'prolific_subject', "prolific_id": jsPsych.data.getURLVariable('PROLIFIC_PID') }), // urlParams.get('PID') if on prolific
             traditional: true,
             contentType: "application/json; charset=utf-8",
             dataType: 'json',
