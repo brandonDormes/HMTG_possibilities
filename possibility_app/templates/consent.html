@@ -77,16 +77,17 @@
                 </div>
 
     </div>
+
     <script>
     $('#consent-btn').click( function(e) {
         $.ajax({
             type: "POST",
             url: "consent",
-            data: JSON.stringify({"subject_id": 'prolific_subject', "prolific_id": jsPsych.data.getURLVariable('PROLIFIC_PID') }), // urlParams.get('PID') if on prolific
+            data: JSON.stringify({"subject_id": 'prolific_subject'}),
             traditional: true,
             contentType: "application/json; charset=utf-8",
             dataType: 'json',
-            success: function (){window.location.href="instructions"}
+            success: function (){window.location.href="getID"}
         });
     });
     </script>

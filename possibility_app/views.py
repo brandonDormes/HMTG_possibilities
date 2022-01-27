@@ -27,13 +27,22 @@ def consent():
     if request.method == 'GET':
         return render_template('consent.html')
     elif request.method == 'POST':
+
+        return make_response("200")
+
+
+@app.route('/getID', methods=['GET', 'POST'])
+def getID():
+    if request.method == 'GET':
+        return render_template('getID.html')
+    if request.method == 'POST':
         s_dat = request.get_json()
-        session['prolific_id'] = s_dat['prolific_id']
-        subj = Subject(subID=s_dat['subject_id'], prolific_id=s_dat['prolific_id'],
+        session['prolific_id'] = s_dat['prolific_ID']
+        subj = Subject(subID='prolific_sub', prolific_id=s_dat['prolific_ID'],
                        trustee_id=int(93), trial_order=1)
         db.session.add(subj)
         db.session.commit()
-        print('You have a new Subject')
+        print('You have a new Subject', s_dat)
         return make_response("200")
 
 
