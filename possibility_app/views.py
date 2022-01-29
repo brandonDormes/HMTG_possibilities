@@ -7,18 +7,17 @@ import numpy as np
 from ast import literal_eval
 
 
-trustee_to_observe = 93
+trustee_to_observe = 93  # 97, 54, 62
 ntrials = 45
 p1s = list(range(79))
 
 @app.route('/')
 def index():
-    return redirect('welcome') #render_template('base.html')
+    return redirect('welcome')
 
 
 @app.route('/welcome')
 def welcome():
-
     return render_template('welcome.html')
 
 
@@ -38,8 +37,8 @@ def getID():
     if request.method == 'POST':
         s_dat = request.get_json()
         session['prolific_id'] = s_dat['prolific_ID']
-        subj = Subject(subID='prolific_sub', prolific_id=s_dat['prolific_ID'],
-                       trustee_id=int(93), trial_order=1)
+        subj = Subject(subID=777, prolific_id=s_dat['prolific_ID'],
+                       trustee_id=int(trustee_to_observe), trial_order=1)
         db.session.add(subj)
         db.session.commit()
         print('You have a new Subject', s_dat)
@@ -48,7 +47,6 @@ def getID():
 
 @app.route('/instructions')
 def instructions():
-    print(session['prolific_id'])
     subj = Subject.query.filter_by(prolific_id=session['prolific_id']).first()
     session['subject_tableindex'] = subj.id
     session['trial'] = 0
@@ -58,7 +56,7 @@ def instructions():
 @app.route('/practice', methods=['GET', 'POST'])
 def practice():
     random.shuffle(p1s)
-    session['p1'] = p1s.pop()
+    session['p1'] = p1s[np.random.randint(int(len(p1s)))]
     session['practice'] = True
     return render_template('practice.html',
                            trial_num='Practice',
@@ -77,19 +75,18 @@ def ready():
     game_dat = pd.read_csv('possibility_app/static/stim_data/HMTG_possib_stim.csv', header=0, index_col=0)
     # Remote
     # game_dat = pd.read_csv('/home/bryan/HMTG_project/possibility_app/static/stim_data/HMTG_possib_stim.csv', header=0, index_col=0)
-    game_dat = game_dat.loc[game_dat.trustee == trustee_to_observe]  # 97, 54, 62
+    game_dat = game_dat.loc[game_dat.trustee == trustee_to_observe]
     game_dat = game_dat.iloc[:ntrials]  # beta test, less trials
     game_dat = game_dat.sample(frac=1, random_state=np.random.RandomState()).reset_index(drop=True)
     game_dat['trial'] = range(ntrials)
     session['stim'] = game_dat.to_dict()
     session['practice'] = False
-    print(probes)
     return render_template('ready.html')
 
 
 @app.route('/invest', methods=['GET', 'POST'])
 def invest():
-    session['p1'] = p1s.pop()
+    session['p1'] = p1s[np.random.randint(int(len(p1s)))]
     return render_template('invest.html', trial_num=session['trial']+1,
                            p1=session['p1'],
                            inv_amt=session['stim']['inv'][str(session['trial'])],
@@ -114,7 +111,7 @@ def predict():
                                    ntrials=ntrials)
 
     elif request.method == 'POST':
-        if session['practice'] == False:
+        if not session['practice']:
             trial_dat = request.get_json()
             tdat = Trial(trl=session['trial'],
                          p1_pic=session['p1'],
@@ -139,7 +136,7 @@ def decision():
                                inv_amt=10,
                                mult=4,
                                ret=15,
-                               interval=999, #.join([str(e) for e in probes]),
+                               interval=999,
                                last_trl=ntrials,
                                ntrials='')
     else:
@@ -149,7 +146,7 @@ def decision():
                 interval = 111
             else:
                 interval = 999
-            return render_template('decision.html', trial_num=session['trial'], # trial was incremented after prediction
+            return render_template('decision.html', trial_num=session['trial'],  # trial was incremented after prediction
                                    p1=session['p1'],
                                    inv_amt=session['stim']['inv'][str(session['trial']-1)],
                                    mult=session['stim']['mult'][str(session['trial']-1)],
@@ -170,7 +167,8 @@ def guessWhy():
                                ret=session['stim']['ret'][str(session['trial'] - 1)],
                                pred=tdat.pred,
                                ntrials=ntrials)
-    if request.method == 'POST':
+
+    elif request.method == 'POST':
         answer = request.get_json()
         print(answer)
         tdat = Trial.query.filter_by(trl=session['trial']-1, subject_id=session['subject_tableindex']).first()
@@ -197,7 +195,7 @@ def thanks():
         db.session.commit()
         return render_template('thanks.html', bonus=bonus)
 
-    if request.method == 'POST':
+    elif request.method == 'POST':
         answer = request.get_json()
         subj.exp_feedback = answer['subject_feedback']
         db.session.add(subj)
