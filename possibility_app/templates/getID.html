@@ -10,16 +10,18 @@
 <h1>  Enter your Prolific ID </h1>
 <h3 style="color: #d02eab">With out this information, we can't pay you an appropriate bonus</h3>
     <br><br>
-    <form method="post" >
+
+     <form method="post">
                 <label></label>
-                <textarea type="text" id="trial_text" autocomplete="off" style="border-radius: .5em; font-size: x-large; width: inherit;"></textarea>
+                <textarea type="text" id="trial_text" autocomplete="off" onkeyup="if (this.textLength !== 0){submit.disabled = false} else {submit.disabled = true}" style="border-radius: .5em; font-size: x-large; width: inherit;"></textarea>
                 <br>
+                <div class="col" id="submit_reason">
+                    <p class="submit">
+                        <input type="submit" value="Continue" class="button" id="submit" name="submit" onclick="submitReason()" style="font-size: xxx-large;" disabled></p>
+                </div>
     </form>
-    <div class="col" id="done">
-        <a href="#"  type="button"  onclick="submitReason()" id="done" class="btn btn-primary" style="font-size: xxx-large;">Continue</a>
-    </div>
-<!--button href="https://app.prolific.co/submissions/complete?cc=XXX"  class="btn-lg" onclick="submitReason()" style="font-size: xxx-large">Finish</button-->
-<script>
+
+    <script>
 function submitReason(){
             $.ajax({
                 type: "POST",
