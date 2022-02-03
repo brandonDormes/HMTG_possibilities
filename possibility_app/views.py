@@ -34,7 +34,7 @@ def consent():
 def getID():
     if request.method == 'GET':
         return render_template('getID.html')
-    if request.method == 'POST':
+    elif request.method == 'POST':
         s_dat = request.get_json()
         session['prolific_id'] = s_dat['prolific_ID']
         subj = Subject(subID=777, prolific_id=s_dat['prolific_ID'],
@@ -42,15 +42,19 @@ def getID():
         db.session.add(subj)
         db.session.commit()
         print('You have a new Subject', s_dat)
+        return redirect('instructions')
+
+
+@app.route('/instructions', methods=['GET', 'POST'])
+def instructions():
+    if request.method == 'GET':
+        subj = Subject.query.filter_by(prolific_id=session['prolific_id']).first()
+        session['subject_tableindex'] = subj.id
+        session['trial'] = 0
+        return render_template('instructions.html')
+    else:
         return make_response("200")
 
-
-@app.route('/instructions')
-def instructions():
-    subj = Subject.query.filter_by(prolific_id=session['prolific_id']).first()
-    session['subject_tableindex'] = subj.id
-    session['trial'] = 0
-    return render_template('instructions.html')
 
 
 @app.route('/practice', methods=['GET', 'POST'])
@@ -169,9 +173,9 @@ def guessWhy():
                                ntrials=ntrials)
 
     elif request.method == 'POST':
+        tdat = Trial.query.filter_by(trl=session['trial'] - 1, subject_id=session['subject_tableindex']).first()
         answer = request.get_json()
         print(answer)
-        tdat = Trial.query.filter_by(trl=session['trial']-1, subject_id=session['subject_tableindex']).first()
         tdat.reason = answer['subject_response']
         tdat.reason_start = answer['resp_start']
         tdat.reason_rt = answer['resp_end']
