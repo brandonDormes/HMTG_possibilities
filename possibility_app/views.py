@@ -48,7 +48,7 @@ def getID():
 @app.route('/instructions', methods=['GET', 'POST'])
 def instructions():
     if request.method == 'GET':
-        subj = Subject.query.filter_by(prolific_id=session['prolific_id']).first()
+        subj = Subject.query.filter_by(prolific_id=session['prolific_id']).last()
         session['subject_tableindex'] = subj.id
         session['trial'] = 0
         return render_template('instructions.html')
