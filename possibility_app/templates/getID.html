@@ -1,39 +1,53 @@
 <!DOCTYPE html>
 <html>
-{% extends  "base.html" %}
-{% block head %} {{ super() }}{% endblock %}
-<body>
-{{ super() }}
-{% block wall1 %}{% endblock %}
-{% block wall2 %}{% endblock %}
-{% block center_mid %}
-<h1>  Enter your Prolific ID </h1>
-<h3 style="color: #d02eab">With out this information, we can't pay you an appropriate bonus</h3>
-    <br><br>
+    {% extends  "base.html" %}
+    {% block head %} {{ super() }}{% endblock %}
+    <body>
+        {{ super() }}
+        {% block wall1 %}{% endblock %}
+        {% block wall2 %}{% endblock %}
+        {% block center_mid %}
+            <h1>  Enter your Prolific ID </h1>
+            <h3 style="color: #d02eab">With out this information, we can't pay you an appropriate bonus</h3>
+            <br><br>
 
-     <form method="post" action="instructions">
-                <label></label>
-                <textarea type="text" id="trial_text" autocomplete="off" onkeyup="if (this.textLength !== 0){submit.disabled = false} else {submit.disabled = true}" style="border-radius: .5em; font-size: x-large; width: inherit;"></textarea>
-                <br>
-                <div class="col" id="submit_reason">
-                    <p class="submit">
-                        <input type="submit" value="Continue" class="button" id="submit" name="submit" onclick="submitReason()" style="font-size: xxx-large;" disabled></p>
-                </div>
-    </form>
+            <div class="input-group input-group-lg">
+                <span class="input-group-text" id="inputGroup-sizing-lg">Prolific ID:</span>
+                <input type="text" class="form-control" onkeyup="checkID()" aria-label="Sizing example input" aria-describedby="inputGroup-sizing-lg">
+            </div>
+            <br><br>
+            <div class="row">
+                <button type="button" id="submitID" class="btn btn-primary" onclick="submitReason()" aria-disabled="true" disabled>Continue</button>
 
-    <script>
-function submitReason(){
-            $.ajax({
-                type: "POST",
-                url: "getID",
-                data: JSON.stringify({"prolific_ID": document.getElementById("trial_text").value}),
-                traditional: true,
-                contentType: "application/json; charset=utf-8",
-                dataType: 'json',
-                success: function(){window.location.href="instructions"}
-            });
-        }
-</script>
-{% endblock %}
-</body>
+                <!--a href="#" type="submit" value="Continue" class="button" id="submit" name="submit" onclick="submitReason()" style="font-size: xxx-large;" disabled/-->
+            </div>
+
+
+
+            <script>
+                function submitReason(){
+                    $.ajax({
+                        type: "POST",
+                        url: "getID",
+                        data: JSON.stringify({"prolific_ID": $(".form-control").val()}), //document.getElementById("trial_text").value}),
+                        traditional: true,
+                        contentType: "application/json; charset=utf-8",
+                        dataType: 'json',
+                        success: window.location.pathname = "/instructions"
+                    });
+                }
+
+                function checkID(){
+                    if ($(".form-control").val().length > 2){
+                        $("#submitID").attr('disabled' , false)
+                    } else {
+                        $("#submitID").attr('disabled' , true)
+                    }
+                }
+
+
+            </script>
+        {% endblock %}
+    </body>
+
 </html>
