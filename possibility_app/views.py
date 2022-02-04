@@ -8,7 +8,6 @@ import numpy as np
 
 trustee_to_observe = 93  # 97, 54, 62
 ntrials = 45
-p1s = list(range(79))
 
 
 
@@ -55,7 +54,7 @@ def getID():
         for t in range(ntrials):
             db.session.add(
                 Trial(trl=t+1,
-                      p1_pic=np.random.randint(int(len(p1s))),
+                      p1_pic=np.random.randint(int(79)),
                       inv=int(game_dat['inv'][t]),
                       mult=int(game_dat['mult'][t]),
                       ret=int(game_dat['ret'][t]),
