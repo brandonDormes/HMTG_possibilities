@@ -14,18 +14,6 @@
 
 {% block center_top %}
     {{ super() }}
-    <script>
-       /* if (Number(localStorage.getItem('prediction')) === {{ ret }}){
-            $('#trial_info').append('<p>You predicted he would return $'+localStorage.getItem('prediction')+'.</p><br><h2>You were correct!</h2>');
-        } else {
-            $('#trial_info').append('<br><p>You predicted he would return $'+localStorage.getItem('prediction')+'.</p>');
-        }*/
-       /*if (Number({{ pred }}) === {{ ret }}){
-            $('#trial_info').append('<p>You predicted he would return $'+ {{ pred }}+'.</p><br><h2>You were correct!</h2>');
-        } else {
-            $('#trial_info').append('<br><p>You predicted he would return $'+ {{ pred }}+'.</p>');
-        }*/
-    </script>
 {% endblock %}
 
 
@@ -48,7 +36,6 @@
         sub_pred = Number(localStorage.getItem('prediction'))
         full_fill = Number(localStorage.getItem('full_fill'))
         guess_fill = Number(localStorage.getItem('guess_fill'))
-        //$("#prompt p").text(' You were off by '+ Math.abs({{ ret }} - sub_pred));
         $("#pred_slider").val({{ ret }}).change();
         $("#predamt").text('He returned ${{ ret }}').css('font-size', 'xxx-large')
 
@@ -76,28 +63,29 @@
         <div class="row">
             <p style="font-size: 2.5em; color: #d02eab"> Why do you think Wilson made this decision?</p>
         </div>
-        <div class="row justify-content-center" style="height: 18%;" id="guess_text">
-            <form method="post" action="invest">
-                <label></label>
-                <textarea type="text" id="trial_text" autocomplete="off" onkeyup="startTime = Date.now(); if (this.textLength !== 0){submit.disabled = false} else {submit.disabled = true}" style="border-radius: .5em; font-size: x-large; width: inherit;"></textarea>
-                <br>
-                <div class="col" id="submit_reason">
-                    <p class="submit">
-                        <input type="submit" value="Continue" class="button" id="submit" name="submit" onclick="submitReason()" disabled></p>
-                </div>
-            </form>
+        <div class="row justify-content-center" style="height: 30%;" id="guess_text">
+
+            <div class="input-group input-group-lg" style="height: 100%;">
+                <input type="text" class="form-control" onkeyup="startTime = Date.now(); checkID()" aria-label="Sizing example input" aria-describedby="inputGroup-sizing-lg">
+            </div>
+            <br><br>
+            <div class="row" style="width: auto;">
+                <button type="button" id="submitID" class="btn btn-primary" onclick="submitReason()" style="font-size: x-large;" aria-disabled="true" disabled>Continue</button>
+
+                <!--a href="#" type="submit" value="Continue" class="button" id="submit" name="submit" onclick="submitReason()" style="font-size: xxx-large;" disabled/-->
+            </div>
         </div>
     </div>
     <script>
 
         function submitReason(){
-            console.log('Reasons were submitted.')
             $.ajax({
                 type: "POST",
                 url: "guesswhy",
-                data: JSON.stringify({"subject_response": document.getElementById("trial_text").value,
-                    'resp_start': (startTime-init_time),
-                    'resp_end': (Date.now() - startTime)
+                data: JSON.stringify({
+                    "subject_response": $(".form-control").val(),
+                    "resp_start": (startTime-init_time),
+                    "resp_end": (Date.now() - startTime)
                 }),
                 traditional: true,
                 contentType: "application/json; charset=utf-8",
@@ -105,6 +93,16 @@
                 success: function(){window.location.href = "invest";}
             });
         }
+
+        function checkID(){
+            if ($(".form-control").val().length > 2){
+                $("#submitID").attr('disabled' , false)
+            } else {
+                $("#submitID").attr('disabled' , true)
+            }
+        }
+
+
     </script>
 {% endblock %}
 </html>
