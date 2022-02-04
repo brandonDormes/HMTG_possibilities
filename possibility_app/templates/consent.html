@@ -74,16 +74,16 @@
     </div>
 
     <script>
-    $('#consent-btn').click( function(e) {
-        $.ajax({
-            type: "POST",
-            url: "consent",
-            data: JSON.stringify({"subject_id": 'prolific_subject'}),
-            traditional: true,
-            contentType: "application/json; charset=utf-8",
-            dataType: 'json',
-            success: function (){window.location.href="getID"}
-        });
+        $('#consent-btn').click( function(e) {
+            $.ajax({
+                type: "POST",
+                url: "consent",
+                data: JSON.stringify({"subject_id": 'prolific_subject'}),
+                traditional: true,
+                contentType: "application/json; charset=utf-8",
+                dataType: 'json',
+                success: function (){window.location.href="getID"}
+            });
     });
     </script>
 </div>
