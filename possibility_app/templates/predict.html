@@ -31,22 +31,25 @@
             }
     }
 
-    const queryString = window.location.search;
-    const urlParams = new URLSearchParams(queryString);
-
     document.body.addEventListener("keydown", function (event) {
         if (event.key === "Enter") {
-            if (window.location.pathname === '/predict'){localStorage.setItem('guess_fill', document.getElementById('greenslider').clientWidth);}
-            localStorage.setItem('prediction', trial_pred)
-            $.ajax({
-                type: "POST",
-                url: "predict",
-                data: JSON.stringify({"trial_prediction": trial_pred}),
-                traditional: true,
-                contentType: "application/json; charset=utf-8",
-                dataType: 'json',
-            });
-            window.location.href = "decision";
+            localStorage.setItem('guess_fill', document.getElementById('greenslider').clientWidth);
+            localStorage.setItem('prediction', trial_pred);
+
+            if (window.location.pathname === '/predict') {
+                $.ajax({
+                    type: "POST",
+                    url: "predict",
+                    data: JSON.stringify({'trial_prediction': trial_pred}),
+                    traditional: true,
+                    contentType: "application/json; charset=utf-8",
+                    dataType: "json"
+                    });
+                window.location.href = "decision"
+            } else if (window.location.pathname === '/practice_pred') {
+                window.location.href = "practice_decision"
+            };
+
         } else if (event.key === "ArrowLeft"){
             if(trial_pred > 0){trial_pred --}
             $("#pred_slider").val(trial_pred).change();
@@ -159,18 +162,18 @@
         <a href="/decision" type="button" id="predict_btn" class="btn btn-primary disabled" style="font-size: xx-large;">Continue</a>
     </div>
     <script>
-    $('a#predict_btn').click( function(e) {
-        console.log('button was pressed: ' + trial_pred)
-        localStorage.setItem('prediction', trial_pred)
-        $.ajax({
-            type: "POST",
-            url: "predict",
-            data: JSON.stringify({"trial_prediction": trial_pred}),
-            traditional: true,
-            contentType: "application/json; charset=utf-8",
-            dataType: 'json',
+        $('a#predict_btn').click( function(e) {
+            console.log('button was pressed: ' + trial_pred)
+            localStorage.setItem('prediction', trial_pred)
+            $.ajax({
+                type: "POST",
+                url: "predict",
+                data: JSON.stringify({"trial_prediction": trial_pred}),
+                traditional: true,
+                contentType: "application/json; charset=utf-8",
+                dataType: 'json'
+            });
         });
-    });
     </script>
 {% endblock %}
 
