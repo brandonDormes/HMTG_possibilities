@@ -4,7 +4,6 @@ from .models import Subject, Trial
 import pandas as pd
 import random
 import numpy as np
-from ast import literal_eval
 
 
 trustee_to_observe = 93  # 97, 54, 62
