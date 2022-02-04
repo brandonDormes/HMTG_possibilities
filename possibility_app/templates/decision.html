@@ -4,7 +4,6 @@
 {% extends "predict.html" %}
 {% block head %} {{ super() }}{% endblock %}
 {% block js %}
-
     <script>
         function updateP1(pred){
         $('#p1_cash img').remove();
@@ -31,8 +30,6 @@
             }
     }
 
-        const queryString = window.location.search;
-        const urlParams = new URLSearchParams(queryString);
         function getNext(event) {
             if (event.key === "Enter") {
                 if (({{ trial_num|tojson }}) === "Practice") {
@@ -44,8 +41,8 @@
                 } else {
                     next="invest"
                 }
-            window.location.href = next;
             }
+            window.location.href = next;
         }
 
         document.body.addEventListener("keydown", getNext);
