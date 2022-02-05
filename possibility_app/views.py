@@ -82,25 +82,29 @@ def practice():
                            mult=4)
 
 
-@app.route('/practice_pred')
+@app.route('/practice_pred', methods=['GET', 'POST'])
 def practice_pred():
-    return render_template('predict.html', trial_num='Practice',
-                           p1=60,
-                           inv_amt=10,
-                           mult=4,
-                           ntrials='')
+    if request.method == 'GET':
+        return render_template('predict.html', trial_num='Practice',
+                               p1=60,
+                               inv_amt=10,
+                               mult=4,
+                               ntrials='')
+    if request.method == 'POST':
+        return redirect(url_for('practice_decision'))
 
 
-@app.route('/practice_decision')
+@app.route('/practice_decision', methods=['GET', 'POST'])
 def practice_decision():
-    return render_template('decision.html', trial_num="Practice",
-                           p1=60,
-                           inv_amt=10,
-                           mult=4,
-                           ret=15,
-                           interval=999,
-                           last_trl=ntrials,
-                           ntrials='')
+    if request.method == "GET":
+        return render_template('decision.html', trial_num="Practice",
+                               p1=60,
+                               inv_amt=10,
+                               mult=4,
+                               ret=15,
+                               interval=999,
+                               last_trl=ntrials,
+                               ntrials='')
 
 
 @app.route('/ready')
@@ -136,7 +140,7 @@ def predict():
         db.session.add(tdat)
         db.session.commit()
         print(trial_dat)
-        return redirect(url_for("decision"))
+        return make_response("200")  # redirect(url_for("decision"))
 
 
 @app.route('/decision', methods=['GET', 'POST'])
