@@ -10,7 +10,6 @@ trustee_to_observe = 93  # 97, 54, 62
 ntrials = 45
 
 
-
 @app.route('/')
 def index():
     return redirect('welcome')
@@ -76,7 +75,6 @@ def instructions():
 
 @app.route('/practice', methods=['GET', 'POST'])
 def practice():
-    #session['practice'] = True
     return render_template('practice.html',
                            trial_num='Practice',
                            p1=60,
@@ -91,6 +89,7 @@ def practice_pred():
                            inv_amt=10,
                            mult=4,
                            ntrials='')
+
 
 @app.route('/practice_decision')
 def practice_decision():
@@ -140,8 +139,6 @@ def predict():
         return redirect(url_for("decision"))
 
 
-
-
 @app.route('/decision', methods=['GET', 'POST'])
 def decision():
     tdat = Trial.query.filter_by(prolific_id=session['prolific_id'], trl=session['trial']).first()
@@ -149,7 +146,7 @@ def decision():
         interval = 111
     else:
         interval = 999
-        session['trial'] = session['trial'] + 1
+        session['trial'] += 1
     return render_template('decision.html',
                            trial_num=tdat.trl,
                            p1=tdat.p1_pic,
@@ -159,7 +156,6 @@ def decision():
                            interval=interval,
                            last_trl=ntrials,
                            ntrials=ntrials)
-
 
 
 @app.route('/guesswhy', methods=['GET', 'POST'])
@@ -183,7 +179,7 @@ def guessWhy():
         tdat.reason_rt = answer['resp_end']
         db.session.add(tdat)
         db.session.commit()
-        session['trial'] = session['trial'] + 1
+        session['trial'] += 1
         return make_response("200")
 
 
@@ -196,7 +192,6 @@ def thanks():
         pe = abs((trl.pred/(trl.inv*trl.mult)) - (trl.ret/(trl.inv*trl.mult)))
         acc = 1 - pe
         bonus = round((2 * acc), 2)
-        #bonus = ((100 - abs(((trl.pred / game_dat.IM[tt]) * 100) - ((trl.ret / game_dat.IM[tt]) * 100))) * .01) * 2
         subj.bonus = bonus
         db.session.add(subj)
         db.session.commit()
