@@ -31,33 +31,48 @@
             }
     }
 
-    document.body.addEventListener("keydown", function (event) {
-        if (event.key === "Enter") {
-            localStorage.setItem('guess_fill', document.getElementById('greenslider').clientWidth);
-            localStorage.setItem('prediction', trial_pred);
+    function moveLeft(e){
+        if (e.key === "ArrowLeft" && trial_pred > 0){
+            console.log("LEFT arrow pressed")
+            trial_pred--
+            $("#pred_slider").val(trial_pred).change()
+        }
+    }
 
-            if (window.location.pathname === '/predict') {
-                $.ajax({
+    function moveRight(e){
+        if (e.key === "ArrowRight" && trial_pred < ({{ inv_amt*mult }}) ){
+            console.log("right arrow pressed")
+            trial_pred++
+            $("#pred_slider").val(trial_pred).change()
+        }
+    }
+
+    function moveOn(e){
+        localStorage.setItem('guess_fill', document.getElementById('greenslider').clientWidth)
+        localStorage.setItem('prediction', trial_pred);
+        if (e.key === "Enter" && window.location.pathname === "/practice_pred"){
+            console.log("someone pressed enter in practice pred")
+            //$.ajax({type:"POST", url: "practice_pred", data: JSON.stringify("+_"), contentType: "application/json;charset=UTF-8"})
+            window.location.href = "practice_decision"
+        }
+        if (e.key === "Enter" && window.location.pathname === "/predict"){
+            $.ajax({
                     type: "POST",
                     url: "predict",
                     data: JSON.stringify({'trial_prediction': trial_pred}),
                     traditional: true,
                     contentType: "application/json; charset=utf-8",
                     dataType: "json"
-                    });
-                window.location.href = "decision"
-            } else if (window.location.pathname === '/practice_pred') {
-                window.location.href = "practice_decision"
-            };
+                })
+            window.location.href = "decision"
+        }
+        }
 
-        } else if (event.key === "ArrowLeft"){
-            if(trial_pred > 0){trial_pred --}
-            $("#pred_slider").val(trial_pred).change();
-        } else if (event.key === "ArrowRight"){
-            if(trial_pred< ({{ inv_amt*mult }})){trial_pred ++}
-            $("#pred_slider").val(trial_pred).change();
-        } else{}
-        });
+    document.body.addEventListener("keydown", moveLeft)
+    document.body.addEventListener("keydown", moveRight)
+    document.body.addEventListener("keydown", moveOn)
+
+
 </script>
 {% endblock %}
 
@@ -122,7 +137,7 @@
             ${{ inv_amt * mult }}
         </div>
     </div>
-    <div class="row justify-content-center" id="predamt" style="font-size: xxx-large;">
+    <div class="row justify-content-center" id="predamt" style="font-size:-webkit-xxx-large;">
 
     </div>
     <script>
