@@ -53,7 +53,7 @@
         if (e.key === "Enter" && window.location.pathname === "/practice_pred"){
             console.log("someone pressed enter in practice pred")
             //$.ajax({type:"POST", url: "practice_pred", data: JSON.stringify("+_"), contentType: "application/json;charset=UTF-8"})
-            window.location.href = "practice_decision"
+           window.location.href = "practice_decision"
         }
         if (e.key === "Enter" && window.location.pathname === "/predict"){
             $.ajax({
@@ -64,7 +64,7 @@
                     contentType: "application/json; charset=utf-8",
                     dataType: "json"
                 })
-            window.location.href = "decision"
+            window.locatation.href = "decision"
         }
         }
 
@@ -148,12 +148,14 @@
                 polyfill: false,
                 onInit: function () {
                     localStorage.setItem('full_fill', (document.getElementById('js-rangeslider-0').clientWidth)-20);
+                    if (window.location.pathname === "/predict"){recip =  "predict";}else{recip = "practice_pred"}
+
                 },
                 onSlideEnd: function () {
                     trial_pred = parseInt(this.value);
                     updateP1(trial_pred)
                     updateP2(trial_pred)
-                    if (window.location.pathname === '/predict'){localStorage.setItem('guess_fill', document.getElementById('greenslider').clientWidth);}
+                    if (window.location.pathname === '/predict' || window.location.pathname === '/practice_pred' ){localStorage.setItem('guess_fill', document.getElementById('greenslider').clientWidth);}
                 }
             })
             .on('input', function () {
@@ -174,15 +176,20 @@
 
 {% block center_bttm %}
     <div class="col" id="predict_bttn">
-        <a href="/decision" type="button" id="predict_btn" class="btn btn-primary disabled" style="font-size: xx-large;">Continue</a>
+        <a href="#" type="button" id="predict_btn" class="btn btn-primary disabled" style="font-size: xx-large;">Continue</a>
     </div>
     <script>
+        if (window.location.pathname === "/predict"){nextlink =  "decision";}else{nextlink = "practice_decision"}
+
+        $('a#predict_btn').attr('href', nextlink)
         $('a#predict_btn').click( function(e) {
             console.log('button was pressed: ' + trial_pred)
             localStorage.setItem('prediction', trial_pred)
+            localStorage.setItem('guess_fill', document.getElementById('greenslider').clientWidth)
+            localStorage.setItem('prediction', trial_pred);
             $.ajax({
                 type: "POST",
-                url: "predict",
+                url: recip,
                 data: JSON.stringify({"trial_prediction": trial_pred}),
                 traditional: true,
                 contentType: "application/json; charset=utf-8",

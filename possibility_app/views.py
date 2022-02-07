@@ -61,20 +61,24 @@ def getID():
                       prolific_id=subj.prolific_id)
             )
         db.session.commit()
-        print('You have a new Subject', s_dat)
+        session.modified = True
+        print('You have a new Subject', s_dat['prolific_ID'])
         return redirect("instructions")
 
 
-@app.route('/instructions', methods=['GET'])
+@app.route('/instructions', methods=['GET', 'POST'])
 def instructions():
     if request.method == 'GET':
+        session.modified = True
         return render_template('instructions.html')
     else:
+        session.modified = True
         return make_response("200")
 
 
 @app.route('/practice', methods=['GET', 'POST'])
 def practice():
+    session.modified = True
     return render_template('practice.html',
                            trial_num='Practice',
                            p1=60,

@@ -8,6 +8,7 @@ app.config['SECRET_KEY'] = 'dfkjfsdlf'
 app.config['SQLALCHEMY_DATABASE_URI'] = "sqlite:///hmtg_possib_DB.db"
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['DEBUG_TB_INTERCEPT_REDIRECTS'] = False
+app.config['SESSION_COOKIE_SAMESITE'] = "None"
 
 
 db = SQLAlchemy(app)
