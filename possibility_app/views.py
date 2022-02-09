@@ -166,12 +166,13 @@ def ready():
 
 @app.route('/invest', methods=['GET', 'POST'])
 def invest():
-    tdat = Trial.query.filter_by(prolific_id=request.args.get('PROLIFIC_PID'), trl=int(request.args.get('trial'))).first()
-    return render_template('invest.html', trial_num=tdat.trl,
-                           p1=tdat.p1_pic,
-                           inv_amt=tdat.inv,
-                           mult=tdat.mult,
-                           ntrials=ntrials)
+    if request.method == 'GET':
+        tdat = Trial.query.filter_by(prolific_id=request.args.get('PROLIFIC_PID'), trl=int(request.args.get('trial'))).first()
+        return render_template('invest.html', trial_num=tdat.trl,
+                               p1=tdat.p1_pic,
+                               inv_amt=tdat.inv,
+                               mult=tdat.mult,
+                               ntrials=ntrials)
 
 
 @app.route('/predict', methods=['GET', 'POST'])
@@ -239,8 +240,7 @@ def guessWhy():
         tdat.reason_rt = answer['resp_end']
         db.session.add(tdat)
         db.session.commit()
-        return make_response("200")
-        # redirect(url_for('invest', PROLIFIC_PID=answer['PROLIFIC_PID'], SESSION_ID=answer['SESSION_ID'], trial=tdat.trl+1 ))
+        return redirect(url_for('invest', PROLIFIC_PID=answer['PROLIFIC_PID'], SESSION_ID=answer['SESSION_ID'], trial=int(tdat.trl)+1 ))
 
 
 @app.route('/thanks', methods=['GET', 'POST'])

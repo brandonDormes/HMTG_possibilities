@@ -177,10 +177,27 @@
 
 {% block center_bttm %}
     <div class="col" id="predict_bttn">
-        <button href="#" type="button" id="predict_btn" class="btn btn-primary disabled" style="font-size: xx-large;">Continue</button>
+        <button href="#" type="button" id="predict_btn"  onclick="submitPred();" class="btn btn-primary disabled" style="font-size: xx-large;">Continue</button>
     </div>
     <script>
-        if (window.location.pathname === "/predict"){nextlink =  "/decision";}else{nextlink = "/practice_decision"}
+        function submitPred(){
+            localStorage.setItem('guess_fill', document.getElementById('greenslider').clientWidth)
+            localStorage.setItem('prediction', trial_pred);
+            $.ajax({
+                    type: "POST",
+                    url: "predict",
+                    data: JSON.stringify({'trial_prediction': trial_pred,
+                        'PROLIFIC_PID': new URLSearchParams(window.location.search).get('PROLIFIC_PID'),
+                        'trial': new URLSearchParams(window.location.search).get('trial'),
+                        'SESSION_ID': new URLSearchParams(window.location.search).get('SESSION_ID')}),
+                    traditional: true,
+                    contentType: "application/json; charset=utf-8",
+                    dataType: "json"
+                })
+            if (window.location.pathname === "/predict"){window.location.pathname =  "/decision";}else{window.location.pathname =  "/practice_decision"}
+        }
+
+        /*
         $('a#predict_btn').click( function(e) {
             console.log('button was pressed: ' + trial_pred)
             localStorage.setItem('prediction', trial_pred)
@@ -195,7 +212,7 @@
                 dataType: 'json',
                 success: window.location.pathname = nextlink
             });
-        });
+        });*/
     </script>
 {% endblock %}
 
