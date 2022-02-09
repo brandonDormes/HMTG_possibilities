@@ -18,22 +18,28 @@
                 <br>
     </form>
     <div class="col" id="done">
-        <a href="#"  type="button"  onclick="submitReason()" id="done" class="btn btn-primary" style="font-size: xxx-large;">Finish</a>
+        <button href="#"  type="button"  onclick="submitReason()" id="done" class="btn btn-primary" style="font-size: xxx-large;">Finish</button>
     </div>
-<!--button href="https://app.prolific.co/submissions/complete?cc=XXX"  class="btn-lg" onclick="submitReason()" style="font-size: xxx-large">Finish</button-->
-<script>
-function submitReason(){
-            console.log('Reasons were submitted.')
-            $.ajax({
-                type: "POST",
-                url: "thanks",
-                data: JSON.stringify({"subject_feedback": document.getElementById("trial_text").value}),
-                traditional: true,
-                contentType: "application/json; charset=utf-8",
-                dataType: 'json',
-                success: function(){window.location.href = "https://app.prolific.co/submissions/complete?cc=XXX";}
-            });
-        }
+
+    <script>
+    function submitReason(){
+                $.ajax({
+                    type: "POST",
+                    url: "thanks",
+                    data: JSON.stringify({
+                        'PROLIFIC_PID': new URLSearchParams(window.location.search).get('PROLIFIC_PID'),
+                        'trial': new URLSearchParams(window.location.search).get('trial'),
+                        'SESSION_ID': new URLSearchParams(window.location.search).get('SESSION_ID'),
+                        "subject_feedback": $("#trial_text").val()}),
+                    traditional: true,
+                    contentType: "application/json; charset=utf-8",
+                    dataType: 'json',
+                    success: function(){
+                        window.location.href = "https://app.prolific.co/submissions/complete?cc=XXX";
+                      }
+                });
+            }
+
 </script>
 {% endblock %}
 </body>

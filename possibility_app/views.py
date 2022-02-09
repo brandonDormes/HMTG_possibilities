@@ -8,7 +8,7 @@ from sqlalchemy import or_
 
 
 subs_per_p2 = 2
-ntrials = 45
+ntrials = 3
 
 
 @app.route('/')
@@ -207,16 +207,16 @@ def guessWhy():
         tdat.reason_rt = answer['resp_end']
         db.session.add(tdat)
         db.session.commit()
-        # THIS DOES NOT WORK
-        return make_response("200") #redirect(url_for('invest', PROLIFIC_PID=answer['PROLIFIC_PID'], SESSION_ID=answer['SESSION_ID'], trial=int(tdat.trl)+1 ))
+        return make_response("200")
 
 
 @app.route('/thanks', methods=['GET', 'POST'])
 def thanks():
-    subj = Subject.query.filter_by(prolific_id=session['prolific_id']).first()
     if request.method == 'GET':
+        pp_id = request.args.get('PROLIFIC_PID')
+        subj = Subject.query.filter_by(prolific_id=pp_id).first()
         tt = random.randint(1, ntrials-1)
-        trl = Trial.query.filter_by(trl=tt, prolific_id=session['prolific_id']).first()
+        trl = Trial.query.filter_by(trl=tt, prolific_id=pp_id).first()
         pe = abs((trl.pred/(trl.inv*trl.mult)) - (trl.ret/(trl.inv*trl.mult)))
         acc = 1 - pe
         bonus = round((2 * acc), 2)
@@ -227,6 +227,9 @@ def thanks():
 
     elif request.method == 'POST':
         answer = request.get_json()
+        print(answer)
+        subj = Subject.query.filter_by(prolific_id=answer['PROLIFIC_PID']).first()
+
         subj.exp_feedback = answer['subject_feedback']
         db.session.add(subj)
         db.session.commit()
