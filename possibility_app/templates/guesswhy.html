@@ -92,7 +92,9 @@
                 traditional: true,
                 contentType: "application/json; charset=utf-8",
                 dataType: 'json',
-                success: function(){window.location.pathname = "/invest";}
+                success: function(){
+                    //new URLSearchParams(window.location.search).set('trial', Number({{ trial_num }})+1),
+                    window.location.pathname = "/next_trial";}
             });
         }
 

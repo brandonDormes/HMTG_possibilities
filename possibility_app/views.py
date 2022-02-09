@@ -164,6 +164,12 @@ def ready():
     return render_template('ready.html')
 
 
+@app.route('/next_trial')
+def next_trial():
+    return redirect(url_for('invest', PROLIFIC_PID=request.args.get('PROLIFIC_PID'), SESSION_ID=request.args.get('SESSION_ID'),
+                            trial=int(int(request.args.get('trial')) + 1)))
+
+
 @app.route('/invest', methods=['GET', 'POST'])
 def invest():
     if request.method == 'GET':
@@ -203,7 +209,6 @@ def decision():
         interval = 111
     else:
         interval = 999
-        session['trial'] += 1
     return render_template('decision.html',
                            trial_num=tdat.trl,
                            p1=tdat.p1_pic,
@@ -240,7 +245,8 @@ def guessWhy():
         tdat.reason_rt = answer['resp_end']
         db.session.add(tdat)
         db.session.commit()
-        return redirect(url_for('invest', PROLIFIC_PID=answer['PROLIFIC_PID'], SESSION_ID=answer['SESSION_ID'], trial=int(tdat.trl)+1 ))
+        # THIS DOES NOT WORK
+        return make_response("200") #redirect(url_for('invest', PROLIFIC_PID=answer['PROLIFIC_PID'], SESSION_ID=answer['SESSION_ID'], trial=int(tdat.trl)+1 ))
 
 
 @app.route('/thanks', methods=['GET', 'POST'])
