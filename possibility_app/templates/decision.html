@@ -33,16 +33,16 @@
         function getNext(event) {
             if (event.key === "Enter") {
                 if (({{ trial_num|tojson }}) === "Practice") {
-                    next="ready";
+                    next="/ready";
                 } else if (Number({{ trial_num }}) === Number({{ last_trl }})) {
-                    next="thanks";
+                    next="/thanks";
                 } else if (Number({{ interval }}) === 111) {
-                    next="guesswhy";
+                    next="/guesswhy";
                 } else {
-                    next="invest"
+                    next="/invest"
                 }
             }
-            window.location.href = next;
+            window.location.pathname = next;
         }
 
         document.body.addEventListener("keydown", getNext);

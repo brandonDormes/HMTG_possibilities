@@ -51,20 +51,21 @@
         localStorage.setItem('guess_fill', document.getElementById('greenslider').clientWidth)
         localStorage.setItem('prediction', trial_pred);
         if (e.key === "Enter" && window.location.pathname === "/practice_pred"){
-            console.log("someone pressed enter in practice pred")
-            //$.ajax({type:"POST", url: "practice_pred", data: JSON.stringify("+_"), contentType: "application/json;charset=UTF-8"})
-           window.location.href = "practice_decision"
+           window.location.pathname = "/practice_decision"
         }
         if (e.key === "Enter" && window.location.pathname === "/predict"){
             $.ajax({
                     type: "POST",
                     url: "predict",
-                    data: JSON.stringify({'trial_prediction': trial_pred}),
+                    data: JSON.stringify({'trial_prediction': trial_pred,
+                        'PROLIFIC_PID': new URLSearchParams(window.location.search).get('PROLIFIC_PID'),
+                        'trial': new URLSearchParams(window.location.search).get('trial'),
+                        'SESSION_ID': new URLSearchParams(window.location.search).get('SESSION_ID')}),
                     traditional: true,
                     contentType: "application/json; charset=utf-8",
                     dataType: "json"
                 })
-            window.locatation.href = "decision"
+            window.location.pathname = "/decision"
         }
         }
 
@@ -176,12 +177,10 @@
 
 {% block center_bttm %}
     <div class="col" id="predict_bttn">
-        <a href="#" type="button" id="predict_btn" class="btn btn-primary disabled" style="font-size: xx-large;">Continue</a>
+        <button href="#" type="button" id="predict_btn" class="btn btn-primary disabled" style="font-size: xx-large;">Continue</button>
     </div>
     <script>
-        if (window.location.pathname === "/predict"){nextlink =  "decision";}else{nextlink = "practice_decision"}
-
-        $('a#predict_btn').attr('href', nextlink)
+        if (window.location.pathname === "/predict"){nextlink =  "/decision";}else{nextlink = "/practice_decision"}
         $('a#predict_btn').click( function(e) {
             console.log('button was pressed: ' + trial_pred)
             localStorage.setItem('prediction', trial_pred)
@@ -193,7 +192,8 @@
                 data: JSON.stringify({"trial_prediction": trial_pred}),
                 traditional: true,
                 contentType: "application/json; charset=utf-8",
-                dataType: 'json'
+                dataType: 'json',
+                success: window.location.pathname = nextlink
             });
         });
     </script>

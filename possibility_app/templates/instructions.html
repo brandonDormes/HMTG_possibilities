@@ -191,7 +191,7 @@
                         <br><br>
                         <h3>You can start with a practice round</h3>
                         <div class="col" id="begin">
-                            <a href="/practice" type="button" id="start_bttn" class="btn btn-primary btn-lg" style="font-size: xxx-large;">Practice</a>
+                            <a href="#" type="button" id="start_bttn" class="btn btn-primary btn-lg" style="font-size: xxx-large;" onclick="window.location.pathname='/practice'">Practice</a>
                         </div>
                     </div>
                 </div>
@@ -210,7 +210,6 @@
     <script>
     //if ($('.carousel-item active').id === "last one"){}
     function endInstr(){
-        console.log('next was pressed')
         if (document.getElementsByClassName('carousel-item active')[0].id === "last one"){
         $('.carousel-control-next').css('display', 'none');
     }

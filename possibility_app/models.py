@@ -4,13 +4,17 @@ from . import db
 class Subject(db.Model):
     __tablename__ = 'subjects'
     prolific_id = db.Column(db.String(64), unique=True, primary_key=True, index=True)
+    in_progress = db.Column(db.Boolean)
+    complete = db.Column(db.Boolean)
+    session_id = db.Column(db.VARCHAR(300))
     trustee_id = db.Column(db.Integer)
+    trustee_strategy = db.Column(db.Integer)
     bonus = db.Column(db.Float)
     exp_feedback = db.Column(db.VARCHAR(300))
     trials = db.relationship('Trial', backref='subject', lazy='dynamic', cascade="all, delete-orphan")
 
     def __repr__(self):
-        return '<Subject %r>' % self.subID
+        return '<Subject %r>' % self.prolific_id
 
 
 class Trial(db.Model):

@@ -71,26 +71,28 @@
             <br><br>
             <div class="row" style="width: auto;">
                 <button type="button" id="submitID" class="btn btn-primary" onclick="submitReason()" style="font-size: x-large;" aria-disabled="true" disabled>Continue</button>
-
-                <!--a href="#" type="submit" value="Continue" class="button" id="submit" name="submit" onclick="submitReason()" style="font-size: xxx-large;" disabled/-->
             </div>
         </div>
     </div>
     <script>
+        //const queryString = window.location.search;
+        //const urlParams = new URLSearchParams(queryString);
 
         function submitReason(){
             $.ajax({
                 type: "POST",
                 url: "guesswhy",
                 data: JSON.stringify({
+                    'PROLIFIC_PID': new URLSearchParams(window.location.search).get('PROLIFIC_PID'),
+                    'trial': new URLSearchParams(window.location.search).get('trial'),
+                    'SESSION_ID': new URLSearchParams(window.location.search).get('SESSION_ID'),
                     "subject_response": $(".form-control").val(),
                     "resp_start": (startTime-init_time),
-                    "resp_end": (Date.now() - startTime)
-                }),
+                    "resp_end": (Date.now() - startTime)}),
                 traditional: true,
                 contentType: "application/json; charset=utf-8",
                 dataType: 'json',
-                success: function(){window.location.href = "invest";}
+                success: function(){window.location.pathname = "/invest";}
             });
         }
 
