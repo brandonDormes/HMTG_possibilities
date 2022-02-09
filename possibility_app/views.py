@@ -7,7 +7,7 @@ import numpy as np
 from sqlalchemy import or_
 
 
-trustee_to_observe = 93  # 97, 54, 62
+subs_per_p2 = 2
 ntrials = 45
 
 
@@ -34,53 +34,15 @@ def consent():
         return make_response("200")
 
 
-@app.route('/getID', methods=['GET', 'POST'])
-def getID():
-    if request.method == 'GET':
-        return render_template('getID.html')
-    elif request.method == 'POST':
-        s_dat = request.get_json()
-        session['prolific_id'] = s_dat['prolific_ID']
-        subj = Subject(prolific_id=s_dat['prolific_ID'],
-                       trustee_id=int(trustee_to_observe))
-        db.session.add(subj)
-
-        # Probes: fixed after first trial, then uniformly sampled
-        probes = [0]
-        [probes.append(np.random.choice([t - 1, t, t + 1])) for t in range(1, ntrials) if t % 4 == 0]
-        # Local
-        game_dat = pd.read_csv('possibility_app/static/stim_data/HMTG_possib_stim.csv', header=0, index_col=0)
-        # Remote
-        # game_dat = pd.read_csv('/home/bryan/HMTG_project/possibility_app/static/stim_data/HMTG_possib_stim.csv', header=0, index_col=0)
-        game_dat = game_dat.loc[game_dat.trustee == trustee_to_observe]
-        game_dat = game_dat.iloc[:ntrials]  # beta test, less trials
-        game_dat = game_dat.sample(frac=1, random_state=np.random.RandomState()).reset_index(drop=True)
-        game_dat['trial'] = range(1, ntrials+1)
-        for t in range(ntrials):
-            db.session.add(
-                Trial(trl=t+1,
-                      p1_pic=np.random.randint(int(79)),
-                      inv=int(game_dat['inv'][t]),
-                      mult=int(game_dat['mult'][t]),
-                      ret=int(game_dat['ret'][t]),
-                      probe=t in probes,
-                      prolific_id=subj.prolific_id)
-            )
-        db.session.commit()
-        session.modified = True
-        print('You have a new Subject', session)
-        return redirect("instructions")
-
-
 @app.route('/instructions', methods=['GET', 'POST'])
 def instructions():
     if request.method == 'GET':
 
         # query DB to find out what trustee/strategy subject will watch
-        subjs = [subj.trustee_id for subj in
-                 db.session.query(Subject).filter(or_(Subject.complete == True, Subject.in_progress == True)).all()]
+        subjs = np.array([subj.trustee_id for subj in
+                 db.session.query(Subject).filter(or_(Subject.complete == True, Subject.in_progress == True)).all()])
         for p2 in [93, 97, 54, 62]:
-            if len(np.where(subjs == p2)) > 2:
+            if len(np.where(subjs == p2)[0]) >= subs_per_p2:
                 continue
             else:
                 trustee_to_observe = p2
