@@ -39,8 +39,8 @@ def instructions():
     if request.method == 'GET':
 
         # query DB to find out what trustee/strategy subject will watch
-        subjs = np.array([subj.trustee_id for subj in
-                 db.session.query(Subject).filter(or_(Subject.complete == True, Subject.in_progress == True)).all()])
+        subjs = np.array([subj.trustee_id for subj in Subject.query.filter_by(complete=True).all()])
+                 #db.session.query(Subject).filter(or_(Subject.complete == True, Subject.in_progress == True)).all()])
         for p2 in [93, 97, 54, 62]:
             if len(np.where(subjs == p2)[0]) >= subs_per_p2:
                 continue
@@ -231,6 +231,8 @@ def thanks():
         subj = Subject.query.filter_by(prolific_id=answer['PROLIFIC_PID']).first()
 
         subj.exp_feedback = answer['subject_feedback']
+        subj.complete = True
+        subj.in_progress = False
         db.session.add(subj)
         db.session.commit()
         return make_response('200')

@@ -82,13 +82,7 @@
             $.ajax({
                 type: "POST",
                 url: "guesswhy",
-                data: JSON.stringify({
-                    'PROLIFIC_PID': new URLSearchParams(window.location.search).get('PROLIFIC_PID'),
-                    'trial': new URLSearchParams(window.location.search).get('trial'),
-                    'SESSION_ID': new URLSearchParams(window.location.search).get('SESSION_ID'),
-                    "subject_response": $(".form-control").val(),
-                    "resp_start": (startTime-init_time),
-                    "resp_end": (Date.now() - startTime)}),
+                data: JSON.stringify({'PROLIFIC_PID': new URLSearchParams(window.location.search).get('PROLIFIC_PID'), 'trial': new URLSearchParams(window.location.search).get('trial'), 'SESSION_ID': new URLSearchParams(window.location.search).get('SESSION_ID'), "subject_response": $(".form-control").val(), "resp_start": (startTime-init_time), "resp_end": (Date.now() - startTime)}),
                 traditional: true,
                 contentType: "application/json; charset=utf-8",
                 dataType: 'json',
