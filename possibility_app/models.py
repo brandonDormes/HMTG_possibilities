@@ -25,6 +25,7 @@ class Trial(db.Model):
     inv = db.Column(db.Integer)
     mult = db.Column(db.Integer)
     pred = db.Column(db.Integer)
+    guess_fill = db.Column(db.Integer)
     ret = db.Column(db.Integer)
     probe = db.Column(db.Boolean)
     reason = db.Column(db.VARCHAR(200))
