@@ -13,7 +13,11 @@
 {% endblock %}
 
 {% block trial_count %}
-    <h1>trial: {{ trial_num }} / {{ ntrials }}</h1>
+    {% if trial_num == 0 %}
+        <h1>Practice!</h1>
+    {% else %}
+        <h1>trial: {{ trial_num }} / {{ ntrials }}</h1>
+    {% endif %}
 {% endblock %}
 
 {% block p1_thought %}
