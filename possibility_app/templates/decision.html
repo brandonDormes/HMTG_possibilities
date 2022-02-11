@@ -31,9 +31,9 @@
     }
 
         function getNext(event) {
-            var next
             if (event.key === "Enter") {
-                if (({{ trial_num|tojson }}) === "Practice") {
+                var next
+                if (Number({{ trial_num }}) === 0 ) {
                     next="/ready";
                 } else if (Number({{ trial_num }}) === Number({{ last_trl }})) {
                     next="/thanks";
@@ -42,8 +42,8 @@
                 } else {
                     next="/next_trial"
                 }
-            }
             window.location.pathname = next;
+            }
         }
 
         document.body.addEventListener("keydown", getNext);
@@ -61,10 +61,10 @@
 {% block center_top %}
     {{ super() }}
     <script>
-        if (Number(localStorage.getItem('prediction')) === {{ ret }}){
-            $('#trial_info').append('<p>You predicted he would return $'+localStorage.getItem('prediction')+'.</p><br><h2>You were correct!</h2>');
+        if (Number({{ pred_amt }}) === {{ ret }}){
+            $('#trial_info').append('<p>You predicted he would return $ {{ pred_amt }}</p><br><h2>You were correct!</h2>');
         } else {
-            $('#trial_info').append('<br><p>You predicted he would return $'+localStorage.getItem('prediction')+'.</p>');
+            $('#trial_info').append('<br><p>You predicted he would return $ {{ pred_amt }}.</p>');
         }
     </script>
 {% endblock %}
@@ -72,9 +72,9 @@
 {% block center_mid %}
     {{ super() }}
     <script>
-        sub_pred = Number(localStorage.getItem('prediction'))
-        full_fill = Number(localStorage.getItem('full_fill'))
-        guess_fill = Number(localStorage.getItem('guess_fill'))
+        sub_pred = Number({{ pred_amt }})
+        full_fill = Number(document.getElementById('js-rangeslider-0').clientWidth-20)
+        guess = Number({{ guess_fill }})
 
         $("#prompt p").text(' You were off by '+ Math.abs({{ ret }} - sub_pred));
         $("#pred_slider").val({{ ret }}).change();
@@ -83,17 +83,16 @@
         if (sub_pred === 0) {
             $(".rangeslider__fill").css('background', 'red');
             console.log('the pred was zero')
-        } else if (sub_pred == {{ inv_amt*mult }}){
-            $("#js-rangeslider-0").prepend('<div class="rangeslider__fill" id="predError" style="background:red; left: 0; height:100%; width: ' + (guess_fill+20).toString() + 'px; " ></div>');
+        } else if (sub_pred === {{ inv_amt*mult }}){
+            $("#js-rangeslider-0").prepend('<div class="rangeslider__fill" id="predError" style="background:red; left: 0; height:100%; width: {{ guess_fill + 20 }}px; " ></div>');
         }else if (sub_pred < {{ ret }}) {
-            console.log('the pred was Less')
-            x = (guess_fill/full_fill) * 100;
+            x = (guess/full_fill) * 100;
             y = ({{ ret/(inv_amt*mult)}}) * 100;
             A = Math.abs(y - x) ;
-            $(".rangeslider__handle").before('<div class="rangeslider__fill" id="predError" style="background:red; left:'+guess_fill.toString()+'px; height:100%; width:' + A.toString() + '%; " ></div>');
+            $(".rangeslider__handle").before('<div class="rangeslider__fill" id="predError" style="background:red; left:{{ guess_fill }}px; height:100%; width:' + A.toString() + '%; " ></div>');
         } else if (sub_pred > {{ ret }}) {
             console.log('the pred was too high')
-            $("#js-rangeslider-0").prepend('<div class="rangeslider__fill" id="predError" style="background:red; left: 0; height:100%; width: ' + guess_fill.toString() + 'px; " ></div>');
+            $("#js-rangeslider-0").prepend('<div class="rangeslider__fill" id="predError" style="background:red; left: 0; height:100%; width: {{ guess_fill }}px; " ></div>');
         } else{};
     </script>
 
