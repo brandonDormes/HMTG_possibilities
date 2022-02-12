@@ -48,25 +48,16 @@
     }
 
     function moveOn(e){
-        localStorage.setItem('guess_fill', document.getElementById('greenslider').clientWidth)
-        localStorage.setItem('prediction', trial_pred);
-        if (e.key === "Enter" && window.location.pathname === "/practice_pred"){
-           window.location.pathname = "/practice_decision"
-        }
         if (e.key === "Enter" && window.location.pathname === "/predict"){
             $.ajax({
                 type: "POST",
                 url: "predict",
-                data: JSON.stringify({'PROLIFIC_PID': new URLSearchParams(window.location.search).get('PROLIFIC_PID'), 'trial': new URLSearchParams(window.location.search).get('trial'), 'SESSION_ID': new URLSearchParams(window.location.search).get('SESSION_ID'), "trial_prediction": trial_pred}),
+                data: JSON.stringify({'PROLIFIC_PID': new URLSearchParams(window.location.search).get('PROLIFIC_PID'), 'trial': new URLSearchParams(window.location.search).get('trial'), 'SESSION_ID': new URLSearchParams(window.location.search).get('SESSION_ID'), "trial_prediction": trial_pred, "guess_fill":document.getElementById('greenslider').clientWidth}),
                 traditional: true,
                 contentType: "application/json; charset=utf-8",
                 dataType: 'json',
-                success: function(){
-                    if (window.location.pathname === "/predict"){window.location.pathname =  "/decision";}else{window.location.pathname =  "/practice_decision"}
-                    ;}
+                success: function(){window.location.pathname =  "/decision";}
             })
-
-            //window.location.pathname = "/decision"
         }
         }
 
@@ -139,25 +130,24 @@
             ${{ inv_amt * mult }}
         </div>
     </div>
-    <div class="row justify-content-center" id="predamt" style="font-size:-webkit-xxx-large;">
+    <div class="row justify-content-center" id="predamt" style="font-size:50px;">
 
     </div>
     <script>
         var $rangeslider = $('#pred_slider');
         var $amount = $('#predamt');
+        var guess_fill
+        var full_fill
         $rangeslider
             .rangeslider({
                 polyfill: false,
                 onInit: function () {
-                    localStorage.setItem('full_fill', (document.getElementById('js-rangeslider-0').clientWidth)-20);
-                    if (window.location.pathname === "/predict"){recip =  "predict";}else{recip = "practice_pred"}
-
                 },
                 onSlideEnd: function () {
                     trial_pred = parseInt(this.value);
                     updateP1(trial_pred)
                     updateP2(trial_pred)
-                    if (window.location.pathname === '/predict' || window.location.pathname === '/practice_pred' ){localStorage.setItem('guess_fill', document.getElementById('greenslider').clientWidth);}
+                    guess_fill= document.getElementById('greenslider').clientWidth;
                 }
             })
             .on('input', function () {
@@ -166,7 +156,7 @@
                 updateP1(trial_pred);
                 updateP2(trial_pred);
                 $('#predict_btn').removeClass('disabled');
-                if (window.location.pathname === '/predict'){localStorage.setItem('guess_fill', document.getElementById('greenslider').clientWidth);}
+                guess_fill=document.getElementById('greenslider').clientWidth;
             });
 
         $('.rangeslider__fill').attr("id", "greenslider")
@@ -185,13 +175,11 @@
             $.ajax({
                 type: "POST",
                 url: "predict",
-                data: JSON.stringify({'PROLIFIC_PID': new URLSearchParams(window.location.search).get('PROLIFIC_PID'), 'trial': new URLSearchParams(window.location.search).get('trial'), 'SESSION_ID': new URLSearchParams(window.location.search).get('SESSION_ID'), "trial_prediction": trial_pred}),
+                data: JSON.stringify({'PROLIFIC_PID': new URLSearchParams(window.location.search).get('PROLIFIC_PID'), 'trial': new URLSearchParams(window.location.search).get('trial'), 'SESSION_ID': new URLSearchParams(window.location.search).get('SESSION_ID'), "trial_prediction": trial_pred, "guess_fill": guess_fill }),
                 traditional: true,
                 contentType: "application/json; charset=utf-8",
                 dataType: 'json',
-                success: function(){
-                    if (window.location.pathname === "/predict"){window.location.pathname =  "/decision";}else{window.location.pathname =  "/practice_decision"}
-                    ;}
+                success: function(){window.location.pathname =  "/decision"}
             });
         }
 
