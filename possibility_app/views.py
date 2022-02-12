@@ -18,7 +18,7 @@ def index():
     # flask_subId = request.args.get('flasker')
 
     return redirect(url_for('welcome', PROLIFIC_PID=np.random.random(),
-                            SESSION_ID=np.random.random(), trial=1))
+                            SESSION_ID=np.random.random(), trial=0))
 
 
 @app.route('/welcome', methods=['GET', 'POST'])
@@ -49,7 +49,7 @@ def instructions():
                 break
         # Populated Database for New Subject
         # Probes: fixed after first trial, then uniformly sampled
-        probes = [0]
+        probes = [1]
         [probes.append(np.random.choice([t - 1, t, t + 1])) for t in range(1, ntrials) if t % 4 == 0]
         # Local
         game_dat = pd.read_csv('possibility_app/static/stim_data/HMTG_possib_stim.csv', header=0, index_col=0)
@@ -60,7 +60,9 @@ def instructions():
         game_dat = game_dat.sample(frac=1, random_state=np.random.RandomState()).reset_index(drop=True)
         game_dat['trial'] = range(1, ntrials + 1)
         # add subject
-
+        practice = []
+        practice.insert(0, {'trustee': trustee_to_observe, 'trial': 0, 'inv': 10, 'mult': 4, 'ret': 15, 'im': 40, 'trustee_clust': game_dat.trustee_clust.values[0]})
+        game_dat = pd.concat([pd.DataFrame(practice), game_dat], ignore_index=True)
         subj = Subject(prolific_id=request.args.get('PROLIFIC_PID'),
                        in_progress=True,
                        complete=False,
@@ -70,9 +72,9 @@ def instructions():
 
         db.session.add(subj)
         # add trials
-        for t in range(ntrials):
+        for t in range(len(game_dat)):
             db.session.add(
-                Trial(trl=t + 1,
+                Trial(trl=t,
                       p1_pic=np.random.randint(int(79)),
                       inv=int(game_dat['inv'][t]),
                       mult=int(game_dat['mult'][t]),
@@ -89,36 +91,13 @@ def instructions():
 
 @app.route('/practice', methods=['GET', 'POST'])
 def practice():
-    return render_template('practice.html',
-                           trial_num='Practice',
-                           p1=60,
-                           inv_amt=10,
-                           mult=4)
-
-
-@app.route('/practice_pred', methods=['GET', 'POST'])
-def practice_pred():
     if request.method == 'GET':
-        return render_template('predict.html', trial_num='Practice',
-                               p1=60,
-                               inv_amt=10,
-                               mult=4,
-                               ntrials='')
-    if request.method == 'POST':
-        return make_response("200")
-
-
-@app.route('/practice_decision', methods=['GET', 'POST'])
-def practice_decision():
-    if request.method == "GET":
-        return render_template('decision.html', trial_num="Practice",
-                               p1=60,
-                               inv_amt=10,
-                               mult=4,
-                               ret=15,
-                               interval=999,
-                               last_trl=ntrials,
-                               ntrials='')
+        tdat = Trial.query.filter_by(prolific_id=request.args.get('PROLIFIC_PID'), trl=int(request.args.get('trial'))).first()
+        return render_template('invest.html', trial_num=tdat.trl,
+                               p1=tdat.p1_pic,
+                               inv_amt=tdat.inv,
+                               mult=tdat.mult,
+                               ntrials=ntrials)
 
 
 @app.route('/ready')
@@ -156,12 +135,13 @@ def predict():
 
     elif request.method == 'POST':
         trial_dat = request.get_json()
-        print(trial_dat)
         tdat = Trial.query.filter_by(prolific_id=trial_dat['PROLIFIC_PID'], trl=int(trial_dat['trial'])).first()
         tdat.pred = int(trial_dat['trial_prediction'])
+        tdat.guess_fill = int(trial_dat['guess_fill'])
         db.session.add(tdat)
         db.session.commit()
-        return make_response("200")  # redirect(url_for("decision"))
+        print(f'subject: {tdat.prolific_id},trial:{trial_dat["trial"]} , predicted: {trial_dat["trial_prediction"]}')
+        return make_response("200")
 
 
 @app.route('/decision', methods=['GET', 'POST'])
@@ -176,6 +156,8 @@ def decision():
                            p1=tdat.p1_pic,
                            inv_amt=tdat.inv,
                            mult=tdat.mult,
+                           pred_amt=tdat.pred,
+                           guess_fill=tdat.guess_fill,
                            ret=tdat.ret,
                            interval=interval,
                            last_trl=ntrials,
@@ -193,7 +175,8 @@ def guessWhy():
                                inv_amt=tdat.inv,
                                mult=tdat.mult,
                                ret=tdat.ret,
-                               pred=tdat.pred,
+                               pred_amt=tdat.pred,
+                               guess_fill=tdat.guess_fill,
                                ntrials=ntrials)
 
     elif request.method == 'POST':
@@ -201,12 +184,12 @@ def guessWhy():
         tdat = Trial.query.filter_by(prolific_id=answer['PROLIFIC_PID'],
                                      trl=int(answer['trial'])).first()
 
-        print(answer)
         tdat.reason = answer['subject_response']
         tdat.reason_start = answer['resp_start']
         tdat.reason_rt = answer['resp_end']
         db.session.add(tdat)
         db.session.commit()
+        print(f'subject: {tdat.prolific_id},trial:{answer["trial"]} , responded: {answer["subject_response"]}')
         return make_response("200")
 
 
@@ -227,7 +210,6 @@ def thanks():
 
     elif request.method == 'POST':
         answer = request.get_json()
-        print(answer)
         subj = Subject.query.filter_by(prolific_id=answer['PROLIFIC_PID']).first()
 
         subj.exp_feedback = answer['subject_feedback']
@@ -235,4 +217,5 @@ def thanks():
         subj.in_progress = False
         db.session.add(subj)
         db.session.commit()
+        print(f"Subject {subj.prolific_id} has finished!!!")
         return make_response('200')
