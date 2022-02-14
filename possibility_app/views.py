@@ -33,57 +33,63 @@ def consent():
     if request.method == 'POST':
         return make_response("200")
 
+@app.route('/new_subject')
+def new_subject():
+    # query DB to find out what trustee/strategy subject will watch
+    subjs = np.array([subj.trustee_id for subj in Subject.query.filter_by(complete=True).all()])
+    # db.session.query(Subject).filter(or_(Subject.complete == True, Subject.in_progress == True)).all()])
+    for p2 in [93, 97, 54, 62]:
+        if len(np.where(subjs == p2)[0]) >= subs_per_p2:
+            continue
+        else:
+            trustee_to_observe = p2
+            break
+    # Populated Database for New Subject
+    # Probes: fixed after first trial, then uniformly sampled
+    probes = [1]
+    [probes.append(np.random.choice([t - 1, t, t + 1])) for t in range(1, ntrials) if t % 4 == 0]
+    # Local
+    game_dat = pd.read_csv('possibility_app/static/stim_data/HMTG_possib_stim.csv', header=0, index_col=0)
+    # Remote
+    # game_dat = pd.read_csv('/home/bryan/HMTG_possibilities/possibility_app/static/stim_data/HMTG_possib_stim.csv', header=0, index_col=0)
+    game_dat = game_dat.loc[game_dat.trustee == trustee_to_observe]
+    game_dat = game_dat.iloc[:ntrials]  # beta test, less trials
+    game_dat = game_dat.sample(frac=1, random_state=np.random.RandomState()).reset_index(drop=True)
+    game_dat['trial'] = range(1, ntrials + 1)
+    # add subject
+    practice = []
+    practice.insert(0, {'trustee': trustee_to_observe, 'trial': 0, 'inv': 10, 'mult': 4, 'ret': 15, 'im': 40,
+                        'trustee_clust': game_dat.trustee_clust.values[0]})
+    game_dat = pd.concat([pd.DataFrame(practice), game_dat], ignore_index=True)
+    subj = Subject(prolific_id=request.args.get('PROLIFIC_PID'),
+                   in_progress=True,
+                   complete=False,
+                   session_id=request.args.get('SESSION_ID'),
+                   trustee_id=trustee_to_observe,
+                   trustee_strategy=game_dat.trustee_clust.values[0])
+
+    db.session.add(subj)
+    # add trials
+    for t in range(len(game_dat)):
+        db.session.add(
+            Trial(trl=t,
+                  p1_pic=np.random.randint(int(79)),
+                  inv=int(game_dat['inv'][t]),
+                  mult=int(game_dat['mult'][t]),
+                  ret=int(game_dat['ret'][t]),
+                  probe=t in probes,
+                  prolific_id=subj.prolific_id)
+        )
+    db.session.commit()
+    print('You have a new Subject', subj.prolific_id)
+    return redirect(url_for('instructions', PROLIFIC_PID=request.args.get('PROLIFIC_PID'), SESSION_ID=request.args.get('SESSION_ID'),
+                            trial=int(request.args.get('trial'))))
+
 
 @app.route('/instructions', methods=['GET', 'POST'])
 def instructions():
     if request.method == 'GET':
 
-        # query DB to find out what trustee/strategy subject will watch
-        subjs = np.array([subj.trustee_id for subj in Subject.query.filter_by(complete=True).all()])
-                 #db.session.query(Subject).filter(or_(Subject.complete == True, Subject.in_progress == True)).all()])
-        for p2 in [93, 97, 54, 62]:
-            if len(np.where(subjs == p2)[0]) >= subs_per_p2:
-                continue
-            else:
-                trustee_to_observe = p2
-                break
-        # Populated Database for New Subject
-        # Probes: fixed after first trial, then uniformly sampled
-        probes = [1]
-        [probes.append(np.random.choice([t - 1, t, t + 1])) for t in range(1, ntrials) if t % 4 == 0]
-        # Local
-        game_dat = pd.read_csv('possibility_app/static/stim_data/HMTG_possib_stim.csv', header=0, index_col=0)
-        # Remote
-        # game_dat = pd.read_csv('/home/bryan/HMTG_possibilities/possibility_app/static/stim_data/HMTG_possib_stim.csv', header=0, index_col=0)
-        game_dat = game_dat.loc[game_dat.trustee == trustee_to_observe]
-        game_dat = game_dat.iloc[:ntrials]  # beta test, less trials
-        game_dat = game_dat.sample(frac=1, random_state=np.random.RandomState()).reset_index(drop=True)
-        game_dat['trial'] = range(1, ntrials + 1)
-        # add subject
-        practice = []
-        practice.insert(0, {'trustee': trustee_to_observe, 'trial': 0, 'inv': 10, 'mult': 4, 'ret': 15, 'im': 40, 'trustee_clust': game_dat.trustee_clust.values[0]})
-        game_dat = pd.concat([pd.DataFrame(practice), game_dat], ignore_index=True)
-        subj = Subject(prolific_id=request.args.get('PROLIFIC_PID'),
-                       in_progress=True,
-                       complete=False,
-                       session_id=request.args.get('SESSION_ID'),
-                       trustee_id=trustee_to_observe,
-                       trustee_strategy=game_dat.trustee_clust.values[0])
-
-        db.session.add(subj)
-        # add trials
-        for t in range(len(game_dat)):
-            db.session.add(
-                Trial(trl=t,
-                      p1_pic=np.random.randint(int(79)),
-                      inv=int(game_dat['inv'][t]),
-                      mult=int(game_dat['mult'][t]),
-                      ret=int(game_dat['ret'][t]),
-                      probe=t in probes,
-                      prolific_id=subj.prolific_id)
-            )
-        db.session.commit()
-        print('You have a new Subject', subj.prolific_id)
         return render_template('instructions.html')
     else:
         return make_response("200")
