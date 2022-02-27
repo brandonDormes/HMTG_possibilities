@@ -2,6 +2,7 @@ from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 from flask_cors import CORS
 from flask_bootstrap import Bootstrap
+from flask_talisman import Talisman
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'dfkjfsdlf'
@@ -14,8 +15,10 @@ app.config['SESSION_COOKIE_SAMESITE'] = "None"
 db = SQLAlchemy(app)
 cors = CORS(app)
 bootstrap = Bootstrap(app)
+#talisman = Talisman(app)
 
 
 from . import views
 if __name__ == '__main__':
+    #app.run(ssl_context=('./cert.pem', './key.pem'))
     app.run()
